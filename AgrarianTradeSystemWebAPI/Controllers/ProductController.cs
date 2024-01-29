@@ -35,9 +35,16 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		//post data
 		[HttpPost]
-		public async Task<ActionResult<List<Product>>> AddProduct(Product product)
+		public async Task<ActionResult<List<Product>>> AddProduct([FromForm] Product product)
 		{
-			var result = await _productServices.AddProduct(product);
+			var file = Request.Form.Files[0];
+
+			if (file == null || file.Length == 0)
+			{
+				return BadRequest("No file uploaded.");
+			}
+
+			var result = await _productServices.AddProduct(file ,product);
 			return Ok(result);
 
 

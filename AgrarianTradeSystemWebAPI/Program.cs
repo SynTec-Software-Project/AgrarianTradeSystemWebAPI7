@@ -1,5 +1,6 @@
 using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,15 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//add connection azure blob
+builder.Services.AddScoped(_ =>
+{
+	return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+//register IFileService
+builder.Services.AddScoped<IFileServices, FileServices>();
+
+//add cors for connect react and .net
 builder.Services.AddCors(option =>
 {
 	option.AddPolicy(name: "ReactJSDomain",

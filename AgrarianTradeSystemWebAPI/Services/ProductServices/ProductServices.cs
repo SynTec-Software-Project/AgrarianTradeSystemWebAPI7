@@ -7,10 +7,12 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 	public class ProductServices : IProductServices
 	{
 		private readonly DataContext _context;
-
-		public ProductServices(DataContext context)
+		private const string AzureContainerName = "Products";
+		private readonly IFileServices _fileServices;
+		public ProductServices(DataContext context ,IFileServices fileServices)
 		{
 			_context = context;
+		    _fileServices = fileServices;
 
 		}
 
@@ -26,18 +28,22 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		//get single data by id
 		public async Task<Product?> GetSingleProduct(int id)
 		{
-			var hero = await _context.Products.FindAsync(id);  //find data from db
-			if (hero == null)
+			var product = await _context.Products.FindAsync(id);  //find data from db
+			if (product == null)
 				return null;
-			return hero;
+			return product;
 		}
 
-		public async Task<List<Product>> AddProduct(Product product)
+		public async Task<List<Product>> AddProduct(IFormFile file ,Product product)
 		{
+			var fileUrl = await _fileServices.Upload(file , AzureContainerName);
+			product.ProductImage = fileUrl;
+		 
 			_context.Products.Add(product);
 			await _context.SaveChangesAsync();
 			return await _context.Products.ToListAsync();
 		}
+
 
 		//update
 		public async Task<List<Product>?> UpdateProduct(int id, Product request)
