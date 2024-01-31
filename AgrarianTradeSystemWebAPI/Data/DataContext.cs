@@ -1,4 +1,5 @@
 ﻿using AgrarianTradeSystemWebAPI.Models;
+using AgrarianTradeSystemWebAPI.Models.UserModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgrarianTradeSystemWebAPI.Data
@@ -14,10 +15,11 @@ namespace AgrarianTradeSystemWebAPI.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-			optionsBuilder.UseSqlServer("Data Source=.; initial Catalog=atsdb ; User Id=sa; password=1234; TrustServerCertificate= True");
-		}
+            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=atsdb;Trusted_connection=true;TrustServerCertificate=true;");
+        }
 
-       public DbSet<Product> Products { get; set; }
-
+		public DbSet<Product> Products { get; set; }
+		public DbSet<User> Users { get; set; }
+		
     }
 }
