@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AgrarianTradeSystemWebAPI.Models
+namespace AgrarianTradeSystemWebAPI.Models.UserModels
 {
     public class UserDto
     {

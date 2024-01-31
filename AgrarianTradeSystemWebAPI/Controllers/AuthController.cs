@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using AgrarianTradeSystemWebAPI.Models;
 using BCrypt.Net;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using AgrarianTradeSystemWebAPI.Models.UserModels;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
@@ -10,6 +14,12 @@ namespace AgrarianTradeSystemWebAPI.Controllers
     public class AuthController : ControllerBase
     {
         public static User user = new User();
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
 
         [HttpPost("register")]
         public ActionResult<User> Register(UserDto request)
@@ -31,7 +41,26 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             {
                 return BadRequest("User or password is incorrect");
             }
-            return Ok(user);
+            string token = CreateToken(user);
+            return Ok(token);
+        }
+
+        string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value!));
+            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var token = new JwtSecurityToken(
+                    claims:claims,
+                    expires:DateTime.Now.AddDays(1),
+                    signingCredentials:cred
+                );
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            return jwt;
         }
     }
 }
