@@ -55,8 +55,9 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
-		//delete products
-		public async Task<ActionResult<List<Product>>> DeleteProduct(int id)
+        //delete products
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<List<Product>>> DeleteProduct(int id)
 		{
 
 			var result = await _productServices.DeleteProduct(id);
