@@ -52,9 +52,6 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			}
 		}
 
-
-
-
 		public async Task<Stream> Get(String name)
 		{
 			//create container instance
