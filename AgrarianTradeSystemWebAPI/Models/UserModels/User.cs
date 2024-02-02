@@ -6,6 +6,15 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
     {
         [Key] public int Id { get; set; }
         public string Username { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string PasswordHash { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public bool EmailVerified { get; set; } = false;
+        public string NIC { get; set; } = string.Empty;
+        public string AddL1 { get; set; } = string.Empty;
+        public string AddL2 { get; set; } = string.Empty;
+        public string AddL3 { get; set;} = string.Empty;
     }
 }
