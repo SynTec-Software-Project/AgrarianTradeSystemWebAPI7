@@ -9,15 +9,16 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		private readonly DataContext _context;
 		private const string AzureContainerName = "Products";
 		private readonly IFileServices _fileServices;
-		public ProductServices(DataContext context ,IFileServices fileServices)
+		public ProductServices(DataContext context, IFileServices fileServices)
 		{
 			_context = context;
-		    _fileServices = fileServices;
+			_fileServices = fileServices;
 
 		}
 
 		public DataContext Context { get; }
 
+		//get all products
 		public async Task<List<Product>> GetAllProduct()
 		{
 
@@ -34,16 +35,13 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			return product;
 		}
 
-		public async Task<List<Product>> AddProduct(IFormFile file ,Product product)
+		//add products
+		public async Task<List<Product>> AddProduct(Product product)
 		{
-			var fileUrl = await _fileServices.Upload(file , AzureContainerName);
-			product.ProductImage = fileUrl;
-		 
 			_context.Products.Add(product);
 			await _context.SaveChangesAsync();
 			return await _context.Products.ToListAsync();
 		}
-
 
 		//update
 		public async Task<List<Product>?> UpdateProduct(int id, Product request)
@@ -54,7 +52,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			product.ProductTitle = request.ProductTitle;
 			product.ProductDescription = request.ProductDescription;
 			product.UnitPrice = request.UnitPrice;
-			product.ProductImage = request.ProductImage;
+			product.ProductImageUrl = request.ProductImageUrl;
 			product.ProductType = request.ProductType;
 			product.Category = request.Category;
 			product.AvailableStock = request.AvailableStock;

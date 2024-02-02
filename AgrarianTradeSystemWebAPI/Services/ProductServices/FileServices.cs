@@ -1,45 +1,55 @@
 ﻿using AgrarianTradeSystemWebAPI.Models;
 using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Http;
+using System.IO;
+
 namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 {
 	public class FileServices : IFileServices
 	{
 		private string _containerName;
 		private readonly BlobServiceClient _blobServiceClient;
-	
+
 
 		public FileServices(BlobServiceClient blobServiceClient)
 		{
 			_blobServiceClient = blobServiceClient;
-			
+
 		}
 
 		public async Task<string> Upload(IFormFile file, string containerName)
 		{
-			_containerName = containerName;
-			// Generate a UUID
-			string uuid = Guid.NewGuid().ToString();
-
-			// Construct new filename with UUID
-			string newFileName = $"{uuid}";
-
-			// Create container instance
-			var containerInstance = _blobServiceClient.GetBlobContainerClient(_containerName);
-
-			// Create blob instance with the new filename and provide the file extension
-			string fileExtension = Path.GetExtension(file.FileName);
-			string blobName = $"{newFileName}{fileExtension}";
-			var blobInstance = containerInstance.GetBlobClient(blobName);
-
-			// File save in storage
-			using (Stream stream = file.OpenReadStream())
+			try
 			{
-				await blobInstance.UploadAsync(stream);
-			}
+				_containerName = containerName;
 
-			// Return the generated new filename
-			return blobName;
+				// Generate a UUID
+				string uuid = Guid.NewGuid().ToString();
+
+				// Construct new filename with UUID
+				string newFileName = $"{uuid}";
+
+				// Create container instance
+				var containerInstance = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+				// Create blob instance
+				string fileExtension = Path.GetExtension(file.FileName);
+
+				string blobName = $"{newFileName}{fileExtension}";
+
+				var blobInstance = containerInstance.GetBlobClient(blobName);
+
+				// File save in storage
+				await blobInstance.UploadAsync(file.OpenReadStream());
+
+				// Return the generated new filename
+				return blobName;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error occurred uploading file: {ex.Message}");
+				throw;
+			}
 		}
 
 

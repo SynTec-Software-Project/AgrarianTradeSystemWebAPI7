@@ -11,6 +11,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+//auto mapper service setup
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 //add connection azure blob
 builder.Services.AddScoped(_ =>
 {

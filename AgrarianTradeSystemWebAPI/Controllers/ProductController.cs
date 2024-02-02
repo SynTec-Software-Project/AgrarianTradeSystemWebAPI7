@@ -1,5 +1,7 @@
-﻿using AgrarianTradeSystemWebAPI.Models;
+﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,17 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 	public class ProductController : ControllerBase
 	{
 		private readonly IProductServices _productServices;
+		private readonly IMapper _mapper;
+		private readonly IFileServices _fileServices;
+		private const string AzureContainerName = "products";
 
-		public ProductController(IProductServices productServices)
+		public ProductController(IProductServices productServices, IMapper mapper, IFileServices fileServices)
 		{
 			_productServices = productServices;
+			_mapper = mapper;
+			_fileServices = fileServices;
 		}
-
+		//get all products
 		[HttpGet]
 		public async Task<ActionResult<List<Product>>> GetAllProduct()
 		{
@@ -33,21 +40,28 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
-		//post data
+		//post products
 		[HttpPost]
-		public async Task<ActionResult<List<Product>>> AddProduct([FromForm] Product product)
+		public async Task<ActionResult<List<Product>>> AddProduct([FromForm] ProductDto productDto, IFormFile file)
 		{
-			var file = Request.Form.Files[0];
-
 			if (file == null || file.Length == 0)
 			{
 				return BadRequest("No file uploaded.");
 			}
 
-			var result = await _productServices.AddProduct(file ,product);
+			// upload file to the azure storage and get link
+			var fileUrl = await _fileServices.Upload(file, AzureContainerName);
+
+			// Map the DTO to the Product entity
+			var product = _mapper.Map<Product>(productDto);
+
+			//set the imageUrl from azure blob storage
+			product.ProductImageUrl = fileUrl;
+
+			// Add the product to the database
+			var result = await _productServices.AddProduct(product);
+
 			return Ok(result);
-
-
 		}
 
 		//update product
@@ -72,9 +86,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 				return NotFound("product is not found");
 			return Ok(result);
 		}
-
-
-
 
 	}
 }
