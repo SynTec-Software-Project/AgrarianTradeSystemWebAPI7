@@ -17,6 +17,12 @@ builder.Services.AddDbContext<DataContext>();
 builder.Services.AddDbContext<DataContext>(options =>
  options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
+builder.Services.AddCors(option =>
+{
+	option.AddPolicy(name: "ReactJSDomain",
+        policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -27,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("ReactJSDomain");
 
 app.UseAuthorization();
 

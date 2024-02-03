@@ -9,11 +9,13 @@ using AgrarianTradeSystemWebAPI.Models.UserModels;
 using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [EnableCors("AllowReactApp")]
     public class AuthController : ControllerBase
     {
         private readonly DataContext _context;
@@ -32,6 +34,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.Username = request.Username;
             user.PasswordHash = passwordHash;
