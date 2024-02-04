@@ -20,7 +20,7 @@
 
         public int MinimumQuantity { get; set;}
 
-        public DateTime DateCreated{ get; set; }
+        public DateTime DateCreated{ get; set; } = DateTime.Now;
 
     }
 }
