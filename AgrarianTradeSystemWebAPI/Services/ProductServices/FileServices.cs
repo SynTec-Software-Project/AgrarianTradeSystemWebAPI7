@@ -52,10 +52,11 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			}
 		}
 
-		public async Task<Stream> Get(String name)
+		public async Task<Stream> Get(string name, string containerName)
 		{
+			_containerName = containerName;
 			//create container instance
-			var containerInstance = _blobServiceClient.GetBlobContainerClient("products");
+			var containerInstance = _blobServiceClient.GetBlobContainerClient(_containerName);
 
 			//create blob instance
 			var blobInstance = containerInstance.GetBlobClient(name);
@@ -63,6 +64,19 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			var downloadContent = await blobInstance.DownloadAsync();
 
 			return downloadContent.Value.Content;
+
+		}
+
+		public async Task Delete(String name, String containerName)
+		{
+			_containerName = containerName;
+			//create container instance
+			var containerInstance = _blobServiceClient.GetBlobContainerClient(_containerName);
+
+			//create blob instance
+			var blobInstance = containerInstance.GetBlobClient(name);
+			//delete blob
+			await blobInstance.DeleteAsync();
 
 		}
 	}

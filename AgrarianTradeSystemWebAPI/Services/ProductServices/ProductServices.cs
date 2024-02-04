@@ -1,5 +1,7 @@
 ﻿using AgrarianTradeSystemWebAPI.Data;
+using AgrarianTradeSystemWebAPI.Dtos;
 using AgrarianTradeSystemWebAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgrarianTradeSystemWebAPI.Services.ProductServices
@@ -7,7 +9,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 	public class ProductServices : IProductServices
 	{
 		private readonly DataContext _context;
-		private const string AzureContainerName = "Products";
+		private const string AzureContainerName = "products";
 		private readonly IFileServices _fileServices;
 		public ProductServices(DataContext context, IFileServices fileServices)
 		{
@@ -44,20 +46,27 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		}
 
 		//update
-		public async Task<List<Product>?> UpdateProduct(int id, Product request)
+		public async Task<List<Product>?> UpdateProduct(int id, [FromForm] Product request ,String newFileUrl)
 		{
-			var product = await _context.Products.FindAsync(id); //find data from db
+			//find data from db
+			var product = await _context.Products.FindAsync(id); 
 			if (product == null)
 				return null;
+			//get product image url Name
+			var fileName = product.ProductImageUrl;
+
+			//delete image from azure storage
+			await _fileServices.Delete(fileName, AzureContainerName);
+
+			//update database
 			product.ProductTitle = request.ProductTitle;
 			product.ProductDescription = request.ProductDescription;
+			product.ProductImageUrl = newFileUrl;
 			product.UnitPrice = request.UnitPrice;
-			product.ProductImageUrl = request.ProductImageUrl;
 			product.ProductType = request.ProductType;
 			product.Category = request.Category;
 			product.AvailableStock = request.AvailableStock;
 			product.MinimumQuantity = request.MinimumQuantity;
-			product.DateCreated = request.DateCreated;
 			await _context.SaveChangesAsync();
 			return await _context.Products.ToListAsync();
 		}
@@ -69,9 +78,18 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			if (product == null)
 				return null;
 
+			//get product image url Name
+			var fileName = product.ProductImageUrl;
+
+			//delete image from azure storage
+			await _fileServices.Delete(fileName, AzureContainerName);
+
+			//remove product from database
 			_context.Products.Remove(product);
 
+			//save changes
 			await _context.SaveChangesAsync();
+
 			return await _context.Products.ToListAsync();
 		}
 
