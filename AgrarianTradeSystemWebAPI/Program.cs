@@ -1,5 +1,6 @@
 using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,29 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//auto mapper service setup
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+//add connection azure blob
+builder.Services.AddScoped(_ =>
+{
+	return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+//register IFileService
+builder.Services.AddScoped<IFileServices, FileServices>();
+
+//add cors for connect react and .net
+builder.Services.AddCors(option =>
+{
+	option.AddPolicy(name: "ReactJSDomain",
+		policy => policy.WithOrigins("http://localhost:5173")
+		.AllowAnyHeader()
+		.AllowAnyMethod());
+
+});
+
 builder.Services.AddScoped<IProductServices, ProductServices>();
+builder.Services.AddDbContext<DataContext>();
 builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -27,7 +50,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("ReactJSDomain");
 app.UseAuthorization();
 
 app.MapControllers();
