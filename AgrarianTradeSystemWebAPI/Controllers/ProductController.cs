@@ -67,7 +67,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		//update product
 		[HttpPut("{id}")]
-		public async Task<ActionResult<List<Product>>> UpdateProduct(int id,[FromForm] ProductDto productDto, IFormFile file)
+		public async Task<ActionResult<List<Product>>> UpdateProduct(int id, [FromForm] ProductDto productDto, IFormFile file)
 		{
 			// upload new file to the azure storage and get link
 			var newFileUrl = await _fileServices.Upload(file, AzureContainerName);
@@ -75,7 +75,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			// Map the DTO to the Product entity
 			var request = _mapper.Map<Product>(productDto);
 
-			var result = await _productServices.UpdateProduct(id, request ,newFileUrl);
+			var result = await _productServices.UpdateProduct(id, request, newFileUrl);
 			if (result is null)
 				return NotFound("product is not found");
 

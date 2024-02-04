@@ -46,10 +46,10 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		}
 
 		//update
-		public async Task<List<Product>?> UpdateProduct(int id, [FromForm] Product request ,String newFileUrl)
+		public async Task<List<Product>?> UpdateProduct(int id, [FromForm] Product request, String newFileUrl)
 		{
 			//find data from db
-			var product = await _context.Products.FindAsync(id); 
+			var product = await _context.Products.FindAsync(id);
 			if (product == null)
 				return null;
 			//get product image url Name
