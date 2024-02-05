@@ -15,7 +15,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [EnableCors("AllowReactApp")]
+    [EnableCors("ReactJSDomain")]
     public class AuthController : ControllerBase
     {
         private readonly DataContext _context;
@@ -34,6 +34,10 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
+            if (_context.Users.Any(u => u.Email == request.Email))
+            {
+                return BadRequest("Email exist");
+            }
 
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.Username = request.Username;
@@ -47,7 +51,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             user.AddL2 = request.AddressLine2;
             user.AddL3 = request.AddressLine3;
             
-            //return Ok(user);
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return Ok("User created");
