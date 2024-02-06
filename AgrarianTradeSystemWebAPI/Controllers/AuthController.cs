@@ -10,6 +10,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors;
+using System.Security.Cryptography;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
@@ -32,7 +33,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         //}
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        public async Task<IActionResult> Register(UserDto request)
         {
             if (_context.Users.Any(u => u.Email == request.Email))
             {
@@ -50,6 +51,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             user.AddL1 = request.AddressLine1;
             user.AddL2 = request.AddressLine2;
             user.AddL3 = request.AddressLine3;
+            user.VerificationToken = CreateCustomToken();
             
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -57,18 +59,68 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(UserDto request)
+        public async Task<IActionResult> Login(LoginDto request)
         {
-            if(user.Username != request.Username)
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (loginuser == null)
             {
                 return BadRequest("User or password is incorrect");
             }
-            if(!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, loginuser.PasswordHash))
             {
                 return BadRequest("User or password is incorrect");
+            }
+            if (loginuser.EmailVerified == false)
+            {
+                return BadRequest("Email is not verified");
             }
             string token = CreateToken(user);
             return Ok(token);
+        }
+
+        [HttpPost("verify")]
+        public async Task<IActionResult> Verify(string token)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
+            if (loginuser == null)
+            {
+                return BadRequest("Invalid Token");
+            }
+            loginuser.EmailVerified = true;
+            loginuser.VerifiedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Ok("Email Verified");
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (loginuser == null)
+            {
+                return BadRequest("Invalid Email!");
+            }
+            loginuser.PasswordResetToken = CreateCustomToken();
+            loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+            await _context.SaveChangesAsync();
+            return Ok("Reset within 10 minutes");
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto request)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            if (loginuser == null || loginuser.ResetTokenExpireAt < DateTime.Now)
+            {
+                return BadRequest("Invalid Token!");
+            }
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            loginuser.PasswordResetToken = null;
+            loginuser.ResetTokenExpireAt = null;
+            loginuser.PasswordResetToken = CreateCustomToken();
+            loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+            await _context.SaveChangesAsync();
+            return Ok("Password Successfully Reset");
         }
 
         string CreateToken(User user)
@@ -87,6 +139,11 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 );
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
             return jwt;
+        }
+
+        private string CreateCustomToken()
+        {
+            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
     }
 }
