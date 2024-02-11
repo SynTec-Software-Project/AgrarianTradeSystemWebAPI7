@@ -1,5 +1,6 @@
 using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using AgrarianTradeSystemWebAPI.Services.UserServices;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductServices, ProductServices>();
+//builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<IUserServices>(sp =>
+ {
+     var dbContext = sp.GetRequiredService<DataContext>();
+     var configuration = sp.GetRequiredService<IConfiguration>();
+     return new UserServices(dbContext, configuration);
+ });
 builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddDbContext<DataContext>(options =>

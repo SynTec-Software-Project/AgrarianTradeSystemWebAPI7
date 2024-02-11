@@ -1,7 +1,17 @@
-﻿namespace AgrarianTradeSystemWebAPI.Services.UserServices
+﻿using AgrarianTradeSystemWebAPI.Data;
+using AgrarianTradeSystemWebAPI.Models.UserModels;
+using Microsoft.AspNetCore.Mvc;
+
+namespace AgrarianTradeSystemWebAPI.Services.UserServices
 {
     public interface IUserServices
     {
-
+        public Task Register(UserDto request);
+        public Task<string> Login(LoginDto request);
+        public Task<string> Verify(string token);
+        public Task<string> ForgotPassword(string email);
+        public Task<string> ResetPassword(ResetPasswordDto request);
+        public string CreateToken(User user);
+        public string CreateCustomToken();
     }
 }
