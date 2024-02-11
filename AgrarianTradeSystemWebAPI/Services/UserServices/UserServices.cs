@@ -98,8 +98,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
             loginuser.PasswordResetToken = null;
             loginuser.ResetTokenExpireAt = null;
-            loginuser.PasswordResetToken = CreateCustomToken();
-            loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+            loginuser.PasswordHash = passwordHash;
             await _context.SaveChangesAsync();
             return ("Password Successfully Reset");
         }
