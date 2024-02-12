@@ -1,4 +1,5 @@
 using AgrarianTradeSystemWebAPI.Data;
+using AgrarianTradeSystemWebAPI.Services.EmailService;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
 using AgrarianTradeSystemWebAPI.Services.UserServices;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductServices, ProductServices>();
-//builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserServices>(sp =>
  {
      var dbContext = sp.GetRequiredService<DataContext>();
