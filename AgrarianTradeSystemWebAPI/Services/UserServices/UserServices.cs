@@ -51,15 +51,15 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (loginuser == null)
             {
-                throw new Exception("Email or password is incorrect");
+                throw new LoginException("Email or password is incorrect");
             }
             if (!BCrypt.Net.BCrypt.Verify(request.Password, loginuser.PasswordHash))
             {
-                throw new Exception("Email or password is incorrect");
+                throw new LoginException("Email or password is incorrect");
             }
             if (loginuser.EmailVerified == false)
             {
-                throw new Exception("Email is not verified");
+                throw new LoginException("Email is not verified");
             }
             string token = CreateToken(loginuser);
             return (token);
@@ -76,9 +76,9 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             await _context.SaveChangesAsync();
             return ("Email Verified");
         }
-        public async Task<string> ForgotPassword(string email)
+        public async Task<string> ForgotPassword(ForgotPasswordDto request)
         {
-            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (loginuser == null)
             {
                 throw new Exception("Invalid Email!");

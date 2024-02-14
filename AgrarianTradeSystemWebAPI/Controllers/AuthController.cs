@@ -38,17 +38,10 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 var result = await _userServices.Login(request);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (LoginException ex)
             {
                 return BadRequest(ex.Message);
             }
-            
-            //if (loginuser.EmailVerified == false)
-            //{
-            //    return BadRequest("Email is not verified");
-            //}
-            //string token = CreateToken(user);
-            //return Ok(token);
         }
 
         [HttpPost("verify")]
@@ -75,11 +68,11 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         }
 
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword(string email)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
         {
             try
             {
-                var result = await _userServices.ForgotPassword(email);
+                var result = await _userServices.ForgotPassword(request);
                 return Ok(result);
             }
             catch (Exception ex)
