@@ -16,12 +16,38 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             _userServices = userServices;
         }
 
-        [HttpPost("register")]
+        [HttpPost("UserRegister")]
         public async Task<IActionResult> Register(UserDto request)
         {
             try
             {
-                await _userServices.Register(request);
+                await _userServices.UserRegister(request);
+                return Ok("User created");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("FarmerRegister")]
+        public async Task<IActionResult> FarmerRegister(UserDto request)
+        {
+            try
+            {
+                await _userServices.UserRegister(request);
+                return Ok("User created");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPost("CourierRegister")]
+        public async Task<IActionResult> CourierRegister(UserDto request)
+        {
+            try
+            {
+                await _userServices.UserRegister(request);
                 return Ok("User created");
             }
             catch (Exception ex)
@@ -56,15 +82,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        //    //var loginuser = await _userServices._context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
-        //    //if (loginuser == null)
-        //    //{
-        //    //    return BadRequest("Invalid Token");
-        //    //}
-        //    //loginuser.EmailVerified = true;
-        //    //loginuser.VerifiedAt = DateTime.Now;
-        //    //await _userServices._context.SaveChangesAsync();
-        //    //return Ok("Email Verified");
         }
 
         [HttpPost("forgot-password")]
@@ -79,15 +96,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        //    //var loginuser = await _userServices._context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        //    //if (loginuser == null)
-        //    //{
-        //    //    return BadRequest("Invalid Email!");
-        //    //}
-        //    //loginuser.PasswordResetToken = CreateCustomToken();
-        //    //loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
-        //    //await _userServices._context.SaveChangesAsync();
-        //    //return Ok("Reset within 10 minutes");
         }
 
         [HttpPost("reset-password")]
@@ -102,18 +110,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        //    var loginuser = await _userServices._context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
-        //    if (loginuser == null || loginuser.ResetTokenExpireAt < DateTime.Now)
-        //    {
-        //        return BadRequest("Invalid Token!");
-        //    }
-        //    string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-        //    loginuser.PasswordResetToken = null;
-        //    loginuser.ResetTokenExpireAt = null;
-        //    loginuser.PasswordResetToken = CreateCustomToken();
-        //    loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
-        //    await _userServices._context.SaveChangesAsync();
-        //    return Ok("Password Successfully Reset");
         }
     }
 }

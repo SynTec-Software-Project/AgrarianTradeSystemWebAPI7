@@ -17,9 +17,19 @@ namespace AgrarianTradeSystemWebAPI.Data
 			base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=atsdb;Trusted_connection=true;TrustServerCertificate=true;");
         }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-		public DbSet<Product> Products { get; set; }
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<Farmer>().ToTable("Farmers");
+            modelBuilder.Entity<Courier>().ToTable("Couriers");
+        }
+
+        public DbSet<Product> Products { get; set; }
 		public DbSet<User> Users { get; set; }
+		public DbSet<Farmer> Farmers { get; set; }
+		public DbSet<Courier> Couriers { get; set; }
 		
     }
 }

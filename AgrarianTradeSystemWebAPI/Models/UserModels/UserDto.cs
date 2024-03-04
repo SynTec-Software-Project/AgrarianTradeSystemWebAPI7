@@ -14,5 +14,6 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
         public string AddressLine1 { get; set; } = string.Empty;
         public string AddressLine2 { get; set; } = string.Empty;
         public string AddressLine3 { get; set; } = string.Empty;
+        public string ProfileImg { get; set;} = string.Empty;
     }
 }

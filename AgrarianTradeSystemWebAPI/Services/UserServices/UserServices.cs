@@ -1,5 +1,7 @@
 ﻿using AgrarianTradeSystemWebAPI.Data;
+using AgrarianTradeSystemWebAPI.Models.RefreshToken;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,10 +24,15 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         }
 
         public static User user = new User();
-        public async Task Register(UserDto request)
+        public static Farmer farmer = new Farmer();
+        public static Courier courier = new Courier();
+
+        public async Task UserRegister(UserDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (existingUser != null)
+            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingUser != null || existingFarmer != null || existingCourier != null)
             {
                 throw new EmailException("Email exist");
             }
@@ -46,82 +53,331 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
-        public async Task<string> Login(LoginDto request)
+        public async Task FarmerRegister(FarmerDto request)
         {
-            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (loginuser == null)
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingUser != null || existingFarmer != null || existingCourier != null)
+            {
+                throw new EmailException("Email exist");
+            }
+
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            farmer.Username = request.Username;
+            farmer.PasswordHash = passwordHash;
+            farmer.FirstName = request.First_Name;
+            farmer.LastName = request.Last_Name;
+            farmer.Email = request.Email;
+            farmer.PhoneNumber = request.Phone;
+            farmer.NIC = request.NICnumber;
+            farmer.AddL1 = request.AddressLine1;
+            farmer.AddL2 = request.AddressLine2;
+            farmer.AddL3 = request.AddressLine3;
+            farmer.CropDetails = request.CropDetails;
+            farmer.VerificationToken = CreateCustomToken();
+
+            _context.Farmers.Add(farmer);
+            await _context.SaveChangesAsync();
+        }
+        public async Task CourierRegister(CourierDto request)
+        {
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (existingUser != null || existingFarmer != null || existingCourier != null)
+            {
+                throw new EmailException("Email exist");
+            }
+
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            courier.Username = request.Username;
+            courier.PasswordHash = passwordHash;
+            courier.FirstName = request.First_Name;
+            courier.LastName = request.Last_Name;
+            courier.Email = request.Email;
+            courier.PhoneNumber = request.Phone;
+            courier.NIC = request.NICnumber;
+            courier.AddL1 = request.AddressLine1;
+            courier.AddL2 = request.AddressLine2;
+            courier.AddL3 = request.AddressLine3;
+            courier.VehicleNo = request.VehicleNumber;
+            courier.VerificationToken = CreateCustomToken();
+
+            _context.Couriers.Add(courier);
+            await _context.SaveChangesAsync();
+        }
+        public async Task<TokenViewModel> Login(LoginDto request)
+        {
+            TokenViewModel _TokenViewModel = new();
+            var loginUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourierUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (loginUser != null)
+            {
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, loginUser.PasswordHash))
+                {
+                    throw new LoginException("Email or password is incorrect");
+                }
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email, loginUser.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "User")
+                };
+                _TokenViewModel.AccessToken = GenerateToken(authClaims);
+                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
+                loginUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmerUser != null)
+            {
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, loginFarmerUser.PasswordHash))
+                {
+                    throw new LoginException("Email or password is incorrect");
+                }
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email, loginFarmerUser.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "User"),
+                    new Claim(ClaimTypes.Role, "Farmer")
+                };
+                _TokenViewModel.AccessToken = GenerateToken(authClaims);
+                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
+                loginFarmerUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginFarmerUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourierUser != null)
+            {
+                if (!BCrypt.Net.BCrypt.Verify(request.Password, loginCourierUser.PasswordHash))
+                {
+                    throw new LoginException("Email or password is incorrect");
+                }
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Email, loginCourierUser.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "Courier")
+                };
+                _TokenViewModel.AccessToken = GenerateToken(authClaims);
+                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
+                loginCourierUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginCourierUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
+                await _context.SaveChangesAsync();
+            }
+            else
             {
                 throw new LoginException("Email or password is incorrect");
             }
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, loginuser.PasswordHash))
-            {
-                throw new LoginException("Email or password is incorrect");
-            }
-            if (loginuser.EmailVerified == false)
-            {
-                throw new LoginException("Email is not verified");
-            }
-            string token = CreateToken(loginuser);
-            return (token);
+            return _TokenViewModel;
+            //if (loginUser == null)
+            //{
+            //    throw new LoginException("Email or password is incorrect");
+            //}
+            //if (!BCrypt.Net.BCrypt.Verify(request.Password, loginUser.PasswordHash))
+            //{
+            //    throw new LoginException("Email or password is incorrect");
+            //}
+            //if (loginUser.EmailVerified == false)
+            //{
+            //    throw new LoginException("Email is not verified");
+            //}
+            //string token = CreateToken(loginUser);
+            //var refreshToken = GenerateRefreshToken();
+            //SetRefreshToken(refreshToken);
+            //return (token);
         }
         public async Task<string> Verify(string token)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
-            if (loginuser == null)
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.VerificationToken == token);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.VerificationToken == token);
+            if (loginuser != null)
+            {
+                loginuser.EmailVerified = true;
+                loginuser.VerifiedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmeruser != null)
+            {
+                loginFarmeruser.EmailVerified = true;
+                loginFarmeruser.VerifiedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourieruser != null)
+            {
+                loginCourieruser.EmailVerified = true;
+                loginCourieruser.VerifiedAt = DateTime.Now;
+                await _context.SaveChangesAsync();
+            }
+            else
             {
                 throw new Exception("Invalid Token");
             }
-            loginuser.EmailVerified = true;
-            loginuser.VerifiedAt = DateTime.Now;
-            await _context.SaveChangesAsync();
             return ("Email Verified");
         }
         public async Task<string> ForgotPassword(ForgotPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            if (loginuser == null)
+            var loginFarmeruser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (loginuser != null)
+            {
+                loginuser.PasswordResetToken = CreateCustomToken();
+                loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmeruser != null)
+            {
+                loginFarmeruser.PasswordResetToken = CreateCustomToken();
+                loginFarmeruser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourieruser != null)
+            {
+                loginCourieruser.PasswordResetToken = CreateCustomToken();
+                loginCourieruser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
+                await _context.SaveChangesAsync();
+            }
+            else
             {
                 throw new Exception("Invalid Email!");
             }
-            loginuser.PasswordResetToken = CreateCustomToken();
-            loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
-            await _context.SaveChangesAsync();
             return ("Reset within 10 minutes");
         }
         public async Task<string> ResetPassword(ResetPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
-            if (loginuser == null || loginuser.ResetTokenExpireAt < DateTime.Now)
+            var loginFarmeruser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            var loginCourieruser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            if (loginuser != null && loginuser.ResetTokenExpireAt > DateTime.Now)
+            {
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
+                loginuser.PasswordResetToken = null;
+                loginuser.ResetTokenExpireAt = null;
+                loginuser.PasswordHash = passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmeruser != null && loginFarmeruser.ResetTokenExpireAt > DateTime.Now)
+            {
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                loginFarmeruser.PasswordResetToken = null;
+                loginFarmeruser.ResetTokenExpireAt = null;
+                loginFarmeruser.PasswordHash = passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourieruser != null && loginCourieruser.ResetTokenExpireAt > DateTime.Now)
+            {
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+                loginCourieruser.PasswordResetToken = null;
+                loginCourieruser.ResetTokenExpireAt = null;
+                loginCourieruser.PasswordHash = passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else
             {
                 throw new Exception("Invalid Token!");
             }
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-            loginuser.PasswordResetToken = null;
-            loginuser.ResetTokenExpireAt = null;
-            loginuser.PasswordHash = passwordHash;
-            await _context.SaveChangesAsync();
             return ("Password Successfully Reset");
         }
-        public string CreateToken(User user)
+        private string GenerateToken(IEnumerable<Claim> claims)
         {
-            List<Claim> claims = new List<Claim>
+            var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTKey:SecretKey").Value!));
+            var TokenExpireTime = Convert.ToInt64(_configuration.GetSection("JWTKey:TokenExpiryTimeInHour").Value!);
+            var tokenDescriptor = new SecurityTokenDescriptor
             {
-                new Claim(ClaimTypes.Name, user.Username)
+                Expires = DateTime.UtcNow.AddHours(TokenExpireTime),
+                SigningCredentials = new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256),
+                Subject = new ClaimsIdentity(claims)
             };
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value!));
-            var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var token = new JwtSecurityToken(
-                    claims: claims,
-                    expires: DateTime.Now.AddDays(1),
-                    signingCredentials: cred
-                );
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwt;
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+        //public string CreateToken(User user)
+        //{
+        //    List<Claim> claims = new List<Claim>
+        //    {
+        //        new Claim(ClaimTypes.Name, user.Username)
+        //    };
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+        //        _configuration.GetSection("AppSettings:Token").Value!));
+        //    var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        //    var token = new JwtSecurityToken(
+        //            claims: claims,
+        //            expires: DateTime.Now.AddDays(1),
+        //            signingCredentials: cred
+        //        );
+        //    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+        //    return jwt;
+        //}
+        public async Task<TokenViewModel> GetRefreshToken(GetRefreshTokenViewModel model)
+        {
+            TokenViewModel _TokenViewModel = new();
+            var principal = GetPrincipalFromExpiredToken(model.AccessToken!);
+
+            string? email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user == null || user.RefreshToken != model.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                throw new Exception("Invalid token or refresh token");
+            }
+            var authClaims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+            var newAccessToken = GenerateToken(authClaims);
+            var newRefreshToken = GenerateRefreshToken();
+            user.RefreshToken = newAccessToken;
+            await _context.SaveChangesAsync();
+            _TokenViewModel.AccessToken = newAccessToken;
+            _TokenViewModel.RefreshToken = newRefreshToken;
+            return _TokenViewModel;
+
+        }
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTKey:SecretKey").Value!)),
+                ValidateLifetime = false
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+            return principal;
+        }
+        //public RefreshToken GenerateRefreshToken()
+        //{
+        //    var refreshToken = new RefreshToken
+        //    {
+        //        Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+        //        Expires = DateTime.Now.AddDays(1)
+        //    };
+        //    return refreshToken;
+        //}
+        private static string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
         public string CreateCustomToken()
         {
-            return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
+            return Guid.NewGuid().ToString();
         }
     }
 }

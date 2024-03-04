@@ -4,6 +4,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240304060619_refreshTkn")]
+    partial class refreshTkn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,6 +87,10 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("bit");
 
@@ -138,9 +145,11 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
                     b.HasKey("Email");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
 
-                    b.UseTptMappingStrategy();
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", b =>
@@ -159,7 +168,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Couriers", (string)null);
+                    b.HasDiscriminator().HasValue("Courier");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Farmer", b =>
@@ -182,25 +191,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("Farmers", (string)null);
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", b =>
-                {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.User", null)
-                        .WithOne()
-                        .HasForeignKey("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", "Email")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Farmer", b =>
-                {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.User", null)
-                        .WithOne()
-                        .HasForeignKey("AgrarianTradeSystemWebAPI.Models.UserModels.Farmer", "Email")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasDiscriminator().HasValue("Farmer");
                 });
 #pragma warning restore 612, 618
         }

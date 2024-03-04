@@ -15,9 +15,12 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
         public string AddL1 { get; set; } = string.Empty;
         public string AddL2 { get; set; } = string.Empty;
         public string AddL3 { get; set;} = string.Empty;
-        public string? VerificationToken { get; set; }
-        public DateTime? VerifiedAt { get; set; }
-        public string? PasswordResetToken { get; set; }
+        public string ProfileImg { get; set; } = string.Empty;
+        public string VerificationToken { get; set; } = string.Empty;
+        public DateTime VerifiedAt { get; set; }
+        public string PasswordResetToken { get; set; } = string.Empty;
         public DateTime? ResetTokenExpireAt { get; set; }
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpiryTime { get; set; }
     }
 }
