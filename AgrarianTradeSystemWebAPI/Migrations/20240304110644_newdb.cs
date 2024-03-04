@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class refreshTkn5 : Migration
+    public partial class newdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,6 +48,23 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 columns: table => new
                 {
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailVerified = table.Column<bool>(type: "bit", nullable: false),
+                    NIC = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfileImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResetTokenExpireAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     VehicleNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VehicleImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LicenseImg = table.Column<string>(type: "nvarchar(max)", nullable: false)
@@ -54,12 +72,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Couriers", x => x.Email);
-                    table.ForeignKey(
-                        name: "FK_Couriers_Users_Email",
-                        column: x => x.Email,
-                        principalTable: "Users",
-                        principalColumn: "Email",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,6 +79,23 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 columns: table => new
                 {
                     Email = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmailVerified = table.Column<bool>(type: "bit", nullable: false),
+                    NIC = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL2 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AddL3 = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProfileImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerificationToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    VerifiedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PasswordResetToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResetTokenExpireAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CropDetails = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NICFrontImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NICBackImg = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -75,12 +104,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Farmers", x => x.Email);
-                    table.ForeignKey(
-                        name: "FK_Farmers_Users_Email",
-                        column: x => x.Email,
-                        principalTable: "Users",
-                        principalColumn: "Email",
-                        onDelete: ReferentialAction.Cascade);
                 });
         }
 

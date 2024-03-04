@@ -30,11 +30,11 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
         [HttpPost("FarmerRegister")]
-        public async Task<IActionResult> FarmerRegister(UserDto request)
+        public async Task<IActionResult> FarmerRegister(FarmerDto request)
         {
             try
             {
-                await _userServices.UserRegister(request);
+                await _userServices.FarmerRegister(request);
                 return Ok("User created");
             }
             catch (Exception ex)
@@ -43,11 +43,11 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
         [HttpPost("CourierRegister")]
-        public async Task<IActionResult> CourierRegister(UserDto request)
+        public async Task<IActionResult> CourierRegister(CourierDto request)
         {
             try
             {
-                await _userServices.UserRegister(request);
+                await _userServices.CourierRegister(request);
                 return Ok("User created");
             }
             catch (Exception ex)
