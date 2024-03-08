@@ -4,16 +4,27 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
 {
     public class Courier
     {
+        [Required]
         public string Username { get; set; } = string.Empty;
+        [Required]
         public string FirstName { get; set; } = string.Empty;
+        [Required]
         public string LastName { get; set; } = string.Empty;
+        [Required]
         public string PasswordHash { get; set; } = string.Empty;
+        [Required]
         public string PhoneNumber { get; set; } = string.Empty;
-        [Key] public string Email { get; set; } = string.Empty;
+        [Required]
+        [Key] 
+        public string Email { get; set; } = string.Empty;
         public bool EmailVerified { get; set; } = false;
+        [Required]
         public string NIC { get; set; } = string.Empty;
+        [Required]
         public string AddL1 { get; set; } = string.Empty;
+        [Required]
         public string AddL2 { get; set; } = string.Empty;
+        [Required]
         public string AddL3 { get; set; } = string.Empty;
         public string ProfileImg { get; set; } = string.Empty;
         public string VerificationToken { get; set; } = string.Empty;
@@ -22,8 +33,10 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
         public DateTime? ResetTokenExpireAt { get; set; }
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime RefreshTokenExpiryTime { get; set; }
+        [Required]
         public string VehicleNo { get; set; } = string.Empty;
         public string VehicleImg { get; set; } = string.Empty;
         public string LicenseImg { get; set; } = string.Empty;
+        public bool Approved { get; set; } = false;
     }
 }

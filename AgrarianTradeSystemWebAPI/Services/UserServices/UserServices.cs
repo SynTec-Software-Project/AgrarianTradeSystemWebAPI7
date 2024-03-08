@@ -30,8 +30,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public async Task UserRegister(UserDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingFarmer = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null || existingFarmer != null || existingCourier != null)
             {
                 throw new EmailException("Email exist");
@@ -56,8 +56,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public async Task FarmerRegister(FarmerDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingFarmer = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null || existingFarmer != null || existingCourier != null)
             {
                 throw new EmailException("Email exist");
@@ -83,8 +83,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public async Task CourierRegister(CourierDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingFarmer = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var existingCourier = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingFarmer = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var existingCourier = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (existingUser != null || existingFarmer != null || existingCourier != null)
             {
                 throw new EmailException("Email exist");
@@ -111,8 +111,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         {
             TokenViewModel _TokenViewModel = new();
             var loginUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var loginFarmerUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var loginCourierUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmerUser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourierUser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (loginUser != null)
             {
                 if (!BCrypt.Net.BCrypt.Verify(request.Password, loginUser.PasswordHash))
@@ -225,8 +225,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public async Task<string> ForgotPassword(ForgotPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var loginFarmeruser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-            var loginCourieruser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (loginuser != null)
             {
                 loginuser.PasswordResetToken = CreateCustomToken();
@@ -254,8 +254,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public async Task<string> ResetPassword(ResetPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
-            var loginFarmeruser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
-            var loginCourieruser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
             if (loginuser != null && loginuser.ResetTokenExpireAt > DateTime.Now)
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
