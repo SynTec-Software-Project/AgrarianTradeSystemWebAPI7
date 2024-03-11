@@ -14,5 +14,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 
 		Task<List<Product>?> DeleteProduct(int id);
 
+		Task<List<Product>> GetAllProductsSortedByPriceAsync(bool ascending = true);
+
 	}
 }

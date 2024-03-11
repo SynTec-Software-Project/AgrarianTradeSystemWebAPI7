@@ -28,6 +28,18 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			return product;
 		}
 
+		public async Task<List<Product>> GetAllProductsSortedByPriceAsync(bool ascending = true)
+		{
+			if (ascending)
+			{
+				return await _context.Products.OrderBy(p => p.UnitPrice).ToListAsync();
+			}
+			else
+			{
+				return await _context.Products.OrderByDescending(p => p.UnitPrice).ToListAsync();
+			}
+		}
+
 		//get single data by id
 		public async Task<Product?> GetSingleProduct(int id)
 		{

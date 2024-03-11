@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 //auto mapper service setup
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+
+
 //add connection azure blob
 builder.Services.AddScoped(_ =>
 {

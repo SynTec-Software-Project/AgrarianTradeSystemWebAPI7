@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
 	[Route("api/[controller]")]
@@ -15,7 +16,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		private readonly IMapper _mapper;
 		private readonly IFileServices _fileServices;
 		private const string AzureContainerName = "products";
-
 		public ProductController(IProductServices productServices, IMapper mapper, IFileServices fileServices)
 		{
 			_productServices = productServices;
@@ -29,6 +29,20 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 			return await _productServices.GetAllProduct();
 		}
+
+		[HttpGet("sorted")]
+		public async Task<ActionResult<List<Product>>> GetProductsSortedByPrice([FromQuery] string sortOrder = "asc")
+		{
+			if (sortOrder.ToLower() != "asc" && sortOrder.ToLower() != "desc")
+			{
+				return BadRequest("Invalid sort order. Use 'asc' or 'desc'.");
+			}
+
+			var products = await _productServices.GetAllProductsSortedByPriceAsync(sortOrder.ToLower() == "asc");
+			return Ok(products);
+		}
+
+
 
 		//get data by id
 		[HttpGet("{id}")]

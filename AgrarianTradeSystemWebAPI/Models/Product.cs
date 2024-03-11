@@ -1,4 +1,6 @@
-﻿namespace AgrarianTradeSystemWebAPI.Models
+﻿
+
+namespace AgrarianTradeSystemWebAPI.Models
 {
 	public class Product
 	{
@@ -20,7 +22,7 @@
 
         public int MinimumQuantity { get; set;}
 
-        public DateTime DateCreated{ get; set; }
+        public DateTime DateCreated{ get; set; } = DateTime.Now;
 
     }
 }
