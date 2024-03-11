@@ -1,4 +1,6 @@
-﻿namespace AgrarianTradeSystemWebAPI.Models
+﻿
+
+namespace AgrarianTradeSystemWebAPI.Models
 {
 	public class Product
 	{
