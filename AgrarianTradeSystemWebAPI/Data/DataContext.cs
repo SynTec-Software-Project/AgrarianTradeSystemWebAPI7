@@ -17,7 +17,12 @@ namespace AgrarianTradeSystemWebAPI.Data
 			optionsBuilder.UseSqlServer("Data Source=.; initial Catalog=atsdb ; User Id=sa; password=1234; TrustServerCertificate= True");
 		}
 
-       public DbSet<Product> Products { get; set; }
+		public DbSet<Product> Products { get; set; }
+		public DbSet<Cart> Cart { get; set; }
 
-    }
+		public DbSet<Buyer> Buyers { get; set; }
+
+		public DbSet<CartItem> CartItems { get; set; }
+
+	}
 }
