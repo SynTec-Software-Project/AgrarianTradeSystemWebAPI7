@@ -43,7 +43,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		//get single data by id
 		public async Task<Product?> GetSingleProduct(int id)
 		{
-			var product = await _context.Products.FindAsync(id);  //find data from db
+			var product = await _context.Products.FindAsync(id); 
 			if (product == null)
 				return null;
 			return product;
