@@ -25,6 +25,9 @@ builder.Services.AddScoped(_ =>
 //register IFileService
 builder.Services.AddScoped<IFileServices, FileServices>();
 
+//register Shopping cart Service
+builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
+
 //add cors for connect react and .net
 builder.Services.AddCors(option =>
 {
