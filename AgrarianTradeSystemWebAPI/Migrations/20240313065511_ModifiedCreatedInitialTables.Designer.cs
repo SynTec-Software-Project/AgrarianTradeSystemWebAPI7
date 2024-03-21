@@ -4,6 +4,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240313065511_ModifiedCreatedInitialTables")]
+    partial class ModifiedCreatedInitialTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,19 +30,21 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("DeliveryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("PickupDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("OrderId", "Status");
 
-                    b.HasKey("OrderId");
-
-                    b.ToTable("Assigns");
+                    b.ToTable("Assigns", t =>
+                        {
+                            t.HasCheckConstraint("FK_Assigns_Orders", "[Status] = [Order].[Status]");
+                        });
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Order", b =>

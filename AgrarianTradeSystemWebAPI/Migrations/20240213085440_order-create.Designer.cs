@@ -4,6 +4,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,36 +12,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240213085440_order-create")]
+    partial class ordercreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.16")
+                .HasAnnotation("ProductVersion", "7.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Assigns", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DeliveryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("PickupDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("OrderId");
-
-                    b.ToTable("Assigns");
-                });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Order", b =>
                 {
@@ -50,13 +33,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("City")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<double>("DeliveryFee")
                         .HasColumnType("float");
 
@@ -64,10 +40,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Street")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -125,22 +97,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.HasKey("ProductID");
 
                     b.ToTable("Products");
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Assigns", b =>
-                {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Order", "Order")
-                        .WithMany("Assigns")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Order", b =>
-                {
-                    b.Navigation("Assigns");
                 });
 #pragma warning restore 612, 618
         }

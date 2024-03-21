@@ -24,6 +24,7 @@ builder.Services.AddScoped(_ =>
 builder.Services.AddScoped<IFileServices, FileServices>();
 
 //add cors for connect react and .net
+/*
 builder.Services.AddCors(option =>
 {
 	option.AddPolicy(name: "ReactJSDomain",
@@ -31,6 +32,16 @@ builder.Services.AddCors(option =>
 		.AllowAnyHeader()
 		.AllowAnyMethod());
 
+});
+*/
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", builder =>
+    {
+        builder.WithOrigins("http://localhost:5174", "http://localhost:5173", "http://localhost:5175", "http://localhost:5176")
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddScoped<IProductServices, ProductServices>();
@@ -50,7 +61,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseCors("ReactJSDomain");
+//app.UseCors("ReactJSDomain");
+app.UseCors("AllowLocalhost");
+
 app.UseAuthorization();
 
 app.MapControllers();
