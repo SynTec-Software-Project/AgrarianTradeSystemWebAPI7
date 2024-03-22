@@ -38,7 +38,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 
 		[HttpGet("items")]
-		public IActionResult GetCartItems(int customerId)
+		public IActionResult GetCartItems(string customerId)
 		{
 			try
 			{
@@ -52,7 +52,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 		[HttpDelete("delete-cart-item")]
-		public IActionResult DeleteCartItem(int buyerId, int cartItemId)
+		public IActionResult DeleteCartItem(string buyerId, int cartItemId)
 		{
 			try
 			{

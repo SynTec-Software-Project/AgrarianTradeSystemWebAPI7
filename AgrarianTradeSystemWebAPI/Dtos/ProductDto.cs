@@ -4,6 +4,8 @@
 	{
 		public string ProductTitle { get; set; } = string.Empty;
 
+		public required string FarmerID { get; set; }
+
 		public string ProductDescription { get; set; } = string.Empty;
 
 		public string ProductType { get; set; } = string.Empty;

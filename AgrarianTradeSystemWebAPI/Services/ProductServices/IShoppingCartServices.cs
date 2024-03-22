@@ -5,8 +5,8 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 {
 	public interface IShoppingCartServices
 	{
-	    Task<Cart> AddToCart(int buyerId, int productId, int quantity);
-	    List<CartItemDto> GetCartItems(int buyerId);
-		List<CartItemDto> DeleteCartItem(int buyerId, int cartItemId);
+	    Task<Cart> AddToCart(string buyerId, int productId, int quantity);
+	    List<CartItemDto> GetCartItems(string buyerId);
+		List<CartItemDto> DeleteCartItem(string buyerId, int cartItemId);
 	}
 }
