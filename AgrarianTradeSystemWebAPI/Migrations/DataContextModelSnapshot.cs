@@ -177,6 +177,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.ToTable("Products");
                 });
 
+
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", b =>
                 {
                     b.Property<string>("Email")
@@ -508,6 +509,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.User", b =>
                 {
                     b.Navigation("Cart");
+
                 });
 #pragma warning restore 612, 618
         }

@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgrarianTradeSystemWebAPI.Data
 {
-	public class DataContext : DbContext
+    public class DataContext : DbContext
 
-	{
-		public DataContext(DbContextOptions<DataContext> options) : base(options)
-		{
+    {
+        public DataContext(DbContextOptions<DataContext> options) : base(options)
+        {
 
 		}
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -23,6 +23,8 @@ namespace AgrarianTradeSystemWebAPI.Data
 		public DbSet<Cart> Cart { get; set; }
 		public DbSet<CartItem> CartItems { get; set; }
 		public DbSet<Orders> Orders { get; set; }
+    public DbSet<Review> Reviews { get; set; }
 
 	}
+
 }

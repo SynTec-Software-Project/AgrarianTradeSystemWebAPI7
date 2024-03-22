@@ -1,6 +1,7 @@
 using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Services.EmailService;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using AgrarianTradeSystemWebAPI.Services.ReviewServices;
 using AgrarianTradeSystemWebAPI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Azure.Storage.Blobs;
@@ -13,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbu	ckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -29,6 +30,7 @@ builder.Services.AddScoped(_ =>
 });
 //register IFileService
 builder.Services.AddScoped<IFileServices, FileServices>();
+builder.Services.AddScoped<IReviewServices, ReviewServices>();
 
 //register Shopping cart Service
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
@@ -37,9 +39,11 @@ builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 builder.Services.AddCors(option =>
 {
 	option.AddPolicy(name: "ReactJSDomain",
-		policy => policy.WithOrigins("http://localhost:5173")
+		policy => policy.WithOrigins("*")
 		.AllowAnyHeader()
-		.AllowAnyMethod());
+		.AllowAnyMethod()
+		.AllowAnyOrigin()
+	);
 
 });
 
