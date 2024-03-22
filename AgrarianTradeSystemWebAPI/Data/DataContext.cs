@@ -14,7 +14,8 @@ namespace AgrarianTradeSystemWebAPI.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-			optionsBuilder.UseSqlServer("Data Source=.; initial Catalog=atsdb ; User Id=sa; password=1234; TrustServerCertificate= True");
+			//optionsBuilder.UseSqlServer("Data Source=.; initial Catalog=atsdb ; User Id=sa; password=1234; TrustServerCertificate= True");
+			optionsBuilder.UseSqlServer("Data Source=SQL5106.site4now.net;Initial Catalog=db_aa6c3c_atsdb;User Id=db_aa6c3c_atsdb_admin;Password=syntec@123");
 		}
 
 		public DbSet<Product> Products { get; set; }
