@@ -3,6 +3,7 @@ using AgrarianTradeSystemWebAPI.Services.EmailService;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
 using AgrarianTradeSystemWebAPI.Services.UserServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -16,6 +17,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//auto mapper service setup
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
+
+
+//add connection azure blob
+builder.Services.AddScoped(_ =>
+{
+	return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+//register IFileService
+builder.Services.AddScoped<IFileServices, FileServices>();
+
+//register Shopping cart Service
+builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
+
+//add cors for connect react and .net
+builder.Services.AddCors(option =>
+{
+	option.AddPolicy(name: "ReactJSDomain",
+		policy => policy.WithOrigins("http://localhost:5173")
+		.AllowAnyHeader()
+		.AllowAnyMethod());
+
+});
+
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
@@ -25,6 +52,7 @@ builder.Services.AddScoped<IUserServices, UserServices>();
 //     var configuration = sp.GetRequiredService<IConfiguration>();
 //     return new UserServices(dbContext, configuration);
 // });
+builder.Services.AddDbContext<DataContext>();
 builder.Services.AddDbContext<DataContext>();
 
 builder.Services.AddDbContext<DataContext>(options =>

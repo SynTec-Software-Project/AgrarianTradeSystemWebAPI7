@@ -15,21 +15,18 @@ namespace AgrarianTradeSystemWebAPI.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseSqlServer("Server=.\\SQLExpress;Database=atsdb;Trusted_connection=true;TrustServerCertificate=true;");
-        }
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    base.OnModelCreating(modelBuilder);
 
-        //    modelBuilder.Entity<User>().ToTable("Users");
-        //    modelBuilder.Entity<Farmer>().ToTable("Farmers");
-        //    modelBuilder.Entity<Courier>().ToTable("Couriers");
-        //}
-
-        public DbSet<Product> Products { get; set; }
-		public DbSet<User> Users { get; set; }
+			optionsBuilder.UseSqlServer("Data Source=SQL5106.site4now.net;Initial Catalog=db_aa6c3c_atsdb;User Id=db_aa6c3c_atsdb_admin;Password=syntec@123");
+		}
+    public DbSet<User> Users { get; set; }
 		public DbSet<Farmer> Farmers { get; set; }
 		public DbSet<Courier> Couriers { get; set; }
-		
-    }
+		public DbSet<Product> Products { get; set; }
+		public DbSet<Cart> Cart { get; set; }
+
+		public DbSet<Buyer> Buyers { get; set; }
+
+		public DbSet<CartItem> CartItems { get; set; }
+
+	}
 }
