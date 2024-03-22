@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AgrarianTradeSystemWebAPI.Models.UserModels
 {
@@ -33,5 +34,8 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
         public DateTime? ResetTokenExpireAt { get; set; }
         public string RefreshToken { get; set; } = string.Empty;
         public DateTime RefreshTokenExpiryTime { get; set; }
-    }
+
+		[JsonIgnore]
+		public Cart? Cart { get; set; }
+	}
 }

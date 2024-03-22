@@ -1,11 +1,15 @@
 ﻿
 
+using AgrarianTradeSystemWebAPI.Models.UserModels;
+using System.Text.Json.Serialization;
+
 namespace AgrarianTradeSystemWebAPI.Models
 {
 	public class Product
 	{
         public int ProductID { get; set; }
 
+        public string? FarmerID { get; set; }
         public string ProductTitle { get; set; }  = string.Empty;
 
         public string ProductDescription { get; set; } = string.Empty;
@@ -23,6 +27,9 @@ namespace AgrarianTradeSystemWebAPI.Models
         public int MinimumQuantity { get; set;}
 
         public DateTime DateCreated{ get; set; } = DateTime.Now;
+
+        [JsonIgnore]
+        public Farmer? Farmer { get; set; }
 
     }
 }

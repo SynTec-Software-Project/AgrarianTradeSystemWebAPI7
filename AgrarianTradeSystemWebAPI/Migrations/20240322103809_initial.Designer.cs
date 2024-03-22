@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240304110644_newdb")]
-    partial class newdb
+    [Migration("20240322103809_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,111 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
+                {
+                    b.Property<int>("CartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartId"));
+
+                    b.Property<string>("BuyerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("CartId");
+
+                    b.HasIndex("BuyerId")
+                        .IsUnique()
+                        .HasFilter("[BuyerId] IS NOT NULL");
+
+                    b.ToTable("Cart");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.CartItem", b =>
+                {
+                    b.Property<int>("CartItemId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"));
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("CartItemId");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Orders", b =>
+                {
+                    b.Property<int>("OrderID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderID"));
+
+                    b.Property<string>("BuyerID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CourierID")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("DeliveryAddressLine1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddressLine2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryAddressLine3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DeliveryFee")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("OrderedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("PickupDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductID")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("OrderID");
+
+                    b.HasIndex("BuyerID");
+
+                    b.HasIndex("CourierID");
+
+                    b.HasIndex("ProductID");
+
+                    b.ToTable("Orders");
+                });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Product", b =>
                 {
@@ -43,6 +148,9 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("FarmerID")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("MinimumQuantity")
                         .HasColumnType("int");
 
@@ -50,7 +158,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProductImage")
+                    b.Property<string>("ProductImageUrl")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -66,6 +174,8 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .HasColumnType("float");
 
                     b.HasKey("ProductID");
+
+                    b.HasIndex("FarmerID");
 
                     b.ToTable("Products");
                 });
@@ -86,6 +196,9 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<string>("AddL3")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("EmailVerified")
                         .HasColumnType("bit");
@@ -172,6 +285,9 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<string>("AddL3")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Approved")
+                        .HasColumnType("bit");
 
                     b.Property<string>("CropDetails")
                         .IsRequired()
@@ -318,6 +434,83 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.HasKey("Email");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.User", "Buyer")
+                        .WithOne("Cart")
+                        .HasForeignKey("AgrarianTradeSystemWebAPI.Models.Cart", "BuyerId");
+
+                    b.Navigation("Buyer");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.CartItem", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Orders", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.User", "Buyer")
+                        .WithMany()
+                        .HasForeignKey("BuyerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", "Courier")
+                        .WithMany()
+                        .HasForeignKey("CourierID");
+
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("Courier");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Product", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.Farmer", "Farmer")
+                        .WithMany("Product")
+                        .HasForeignKey("FarmerID");
+
+                    b.Navigation("Farmer");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
+                {
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Farmer", b =>
+                {
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.User", b =>
+                {
+                    b.Navigation("Cart");
                 });
 #pragma warning restore 612, 618
         }

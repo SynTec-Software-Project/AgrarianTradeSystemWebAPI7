@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace AgrarianTradeSystemWebAPI.Models.UserModels
 {
@@ -39,5 +40,8 @@ namespace AgrarianTradeSystemWebAPI.Models.UserModels
         public string NICBackImg { get; set; } = string.Empty;
         public string GSLetterImg { get; set; } = string.Empty;
         public bool Approved { get; set; } = false;
-    }
+
+        [JsonIgnore]
+		public ICollection<Product>? Product { get; set; }
+	}
 }
