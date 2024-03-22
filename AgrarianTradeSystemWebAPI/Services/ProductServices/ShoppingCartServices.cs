@@ -70,8 +70,6 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			return cart;
 		}
 
-
-
 		public List<CartItemDto> GetCartItems(int buyerId)
 		{
 			var cartItems = _context.CartItems
