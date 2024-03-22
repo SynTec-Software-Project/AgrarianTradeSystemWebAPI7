@@ -126,9 +126,9 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "User")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginUser.RefreshToken = GenerateRefreshToken();
                 loginUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -138,6 +138,10 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     throw new LoginException("Email or password is incorrect");
                 }
+                if (loginFarmerUser.Approved == false)
+                {
+                    throw new LoginException("Your account has not yet been approved. Thank you for your patience.");
+                }
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, loginFarmerUser.Email),
@@ -146,9 +150,9 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "Farmer")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginFarmerUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginFarmerUser.RefreshToken = GenerateRefreshToken();
                 loginFarmerUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -158,6 +162,10 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     throw new LoginException("Email or password is incorrect");
                 }
+                if (loginCourierUser.Approved == false)
+                {
+                    throw new LoginException("Your account has not yet been approved. Thank you for your patience.");
+                }
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, loginCourierUser.Email),
@@ -165,9 +173,9 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "Courier")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                _TokenViewModel.RefreshToken = GenerateRefreshToken();
+                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginCourierUser.RefreshToken = _TokenViewModel.RefreshToken;
+                loginCourierUser.RefreshToken = GenerateRefreshToken();
                 loginCourierUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -339,7 +347,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             user.RefreshToken = newAccessToken;
             await _context.SaveChangesAsync();
             _TokenViewModel.AccessToken = newAccessToken;
-            _TokenViewModel.RefreshToken = newRefreshToken;
             return _TokenViewModel;
 
         }
