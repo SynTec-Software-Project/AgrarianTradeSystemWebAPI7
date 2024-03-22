@@ -218,6 +218,53 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Returns",
+                columns: table => new
+                {
+                    ReturnID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderID = table.Column<int>(type: "int", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReturnImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OrdersOrderID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Returns", x => x.ReturnID);
+                    table.ForeignKey(
+                        name: "FK_Returns_Orders_OrdersOrderID",
+                        column: x => x.OrdersOrderID,
+                        principalTable: "Orders",
+                        principalColumn: "OrderID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderID = table.Column<int>(type: "int", nullable: false),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    SellerRating = table.Column<int>(type: "int", nullable: false),
+                    DeliverRating = table.Column<int>(type: "int", nullable: false),
+                    ProductRating = table.Column<int>(type: "int", nullable: false),
+                    OrdersOrderID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Reviews", x => x.ReviewId);
+                    table.ForeignKey(
+                        name: "FK_Reviews_Orders_OrdersOrderID",
+                        column: x => x.OrdersOrderID,
+                        principalTable: "Orders",
+                        principalColumn: "OrderID");
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Cart_BuyerId",
                 table: "Cart",
@@ -254,6 +301,16 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 name: "IX_Products_FarmerID",
                 table: "Products",
                 column: "FarmerID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Returns_OrdersOrderID",
+                table: "Returns",
+                column: "OrdersOrderID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_OrdersOrderID",
+                table: "Reviews",
+                column: "OrdersOrderID");
         }
 
         /// <inheritdoc />
@@ -263,10 +320,16 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 name: "CartItems");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "Returns");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "Cart");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Couriers");

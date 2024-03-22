@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240322103809_initial")]
+    [Migration("20240322122910_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -178,6 +178,78 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.HasIndex("FarmerID");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Returns", b =>
+                {
+                    b.Property<int>("ReturnID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReturnID"));
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrdersOrderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReturnImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReturnID");
+
+                    b.HasIndex("OrdersOrderID");
+
+                    b.ToTable("Returns");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Review", b =>
+                {
+                    b.Property<int>("ReviewId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DeliverRating")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrdersOrderID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductRating")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReviewImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SellerRating")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReviewId");
+
+                    b.HasIndex("OrdersOrderID");
+
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", b =>
@@ -496,6 +568,24 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .HasForeignKey("FarmerID");
 
                     b.Navigation("Farmer");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Returns", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
+                        .WithMany()
+                        .HasForeignKey("OrdersOrderID");
+
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Review", b =>
+                {
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
+                        .WithMany()
+                        .HasForeignKey("OrdersOrderID");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
