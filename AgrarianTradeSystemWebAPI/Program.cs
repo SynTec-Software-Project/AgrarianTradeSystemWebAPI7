@@ -8,6 +8,7 @@ using Azure.Storage.Blobs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AgrarianTradeSystemWebAPI.Services.NewOrderServices;
 using AgrarianTradeSystemWebAPI.Services.OrderServices;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,7 @@ builder.Services.AddCors(option =>
 builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
+builder.Services.AddScoped<INewOrderServices, NewOrderServices>();
 //builder.Services.AddScoped<IUserServices>(sp =>
 // {
 //     var dbContext = sp.GetRequiredService<DataContext>();
