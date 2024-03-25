@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AgrarianTradeSystemWebAPI.Services.NewOrderServices;
+using AgrarianTradeSystemWebAPI.Services.OrderServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ builder.Services.AddScoped(_ =>
 //register IFileService
 builder.Services.AddScoped<IFileServices, FileServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
+builder.Services.AddScoped<IOrderServices, OrderServices>();
 
 //register Shopping cart Service
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
