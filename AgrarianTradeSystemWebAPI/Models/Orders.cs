@@ -8,7 +8,7 @@ namespace AgrarianTradeSystemWebAPI.Models
 	{
 		[Key]
 		public int OrderID { get; set; }
-		public required string BuyerID { get; set; }
+		public string? BuyerID { get; set; }
         public int ProductID { get; set; }
         public string? DeliveryAddressLine1 { get; set; }
 		public string? DeliveryAddressLine2 { get; set; }
@@ -26,8 +26,6 @@ namespace AgrarianTradeSystemWebAPI.Models
 		public Product? Product { get; set; }
 		[JsonIgnore]
 		public Courier? Courier { get; set; }
-
-
 
 	}
 }
