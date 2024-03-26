@@ -17,6 +17,7 @@ namespace AgrarianTradeSystemWebAPI.Models
 		public decimal DeliveryFee { get; set; }
 		public DateTime OrderedDate { get; set; }
 		public decimal TotalPrice { get; set; }
+		public decimal TotalQuantity { get; set; }
 		public string? CourierID { get; set; }
 		public DateTime? PickupDate { get; set; }
 		public DateTime? DeliveryDate { get; set; }	
