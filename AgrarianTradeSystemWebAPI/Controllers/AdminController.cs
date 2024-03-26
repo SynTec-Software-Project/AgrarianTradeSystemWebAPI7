@@ -39,5 +39,33 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         {
             return await _adminServices.GetAllApprovedFarmers();
         }
+
+        [HttpPut("approveFarmer")]
+        public async Task<IActionResult> ApproveFarmer(string email)
+        {
+            try
+            {
+                var result = await _adminServices.ApproveFarmer(email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("approveCourier")]
+        public async Task<IActionResult> ApproveCourier(string email)
+        {
+            try
+            {
+                var result = await _adminServices.ApproveCourier(email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

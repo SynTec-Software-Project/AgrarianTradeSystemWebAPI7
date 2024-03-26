@@ -10,5 +10,7 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
         Task<List<GetCourierModel>> GetAllApprovedCouriers();
         Task<List<GetFarmerModel>> GetAllNewFarmers();
         Task<List<GetFarmerModel>> GetAllApprovedFarmers();
+        Task<string> ApproveFarmer(string request);
+        Task<string> ApproveCourier(string request);
     }
 }

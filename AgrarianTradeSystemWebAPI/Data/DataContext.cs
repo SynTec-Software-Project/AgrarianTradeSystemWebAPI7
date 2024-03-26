@@ -16,7 +16,8 @@ namespace AgrarianTradeSystemWebAPI.Data
 			base.OnConfiguring(optionsBuilder);
 			optionsBuilder.UseSqlServer("Data Source=SQL5106.site4now.net;Initial Catalog=db_aa6c3c_syntecproject;User Id=db_aa6c3c_syntecproject_admin;Password=syntec@123");
 		}
-		public DbSet<User> Users { get; set; }
+
+        public DbSet<User> Users { get; set; }
 		public DbSet<Farmer> Farmers { get; set; }
 		public DbSet<Courier> Couriers { get; set; }
 		public DbSet<Product> Products { get; set; }

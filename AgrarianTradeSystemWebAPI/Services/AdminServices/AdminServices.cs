@@ -121,5 +121,28 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
             }
             return newFarmerModels;
         }
+
+        public async Task<string> ApproveCourier(string request)
+        {
+            var courier = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request);
+            if (courier == null)
+            {
+                throw new AdminErrorException("Invalid Email");
+            }
+            courier.Approved = true;
+            await _context.SaveChangesAsync();
+            return ("Approved successfully");
+        }
+        public async Task<string> ApproveFarmer(string request)
+        {
+            var farmer = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request);
+            if (farmer == null)
+            {
+                throw new AdminErrorException("Invalid Email");
+            }
+            farmer.Approved = true;
+            await _context.SaveChangesAsync();
+            return ("Approved successfully");
+        }
     }
 }
