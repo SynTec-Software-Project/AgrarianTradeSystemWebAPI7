@@ -12,6 +12,7 @@ namespace AgrarianTradeSystemWebAPI.Dtos
         public DateTime? PickupDate { get; set; }
         public decimal DeliveryFee { get; set; }
         public string? OrderStatus { get; set; }
+        public decimal TotalQuantity { get; set; }
         public string CustomerFName { get; set; } = string.Empty;
         public string CustomerLName { get; set; } = string.Empty;
         public string CustomerAddL1 { get; set; } = string.Empty;

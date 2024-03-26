@@ -13,6 +13,7 @@ namespace AgrarianTradeSystemWebAPI.Dtos
         public decimal DeliveryFee { get; set; }
         public string? OrderStatus { get; set; }
         public decimal TotalPrice { get; set; }
+        public decimal TotalQuantity { get; set; }
         public string FarmerFName { get; set; } = string.Empty;
         public string FarmerLName { get; set; } = string.Empty;
         public string FarmerAddL1 { get; set; } = string.Empty;
