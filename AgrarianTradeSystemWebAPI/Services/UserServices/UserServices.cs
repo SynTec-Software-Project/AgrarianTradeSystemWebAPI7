@@ -1,6 +1,7 @@
 ﻿using AgrarianTradeSystemWebAPI.Data;
 using AgrarianTradeSystemWebAPI.Models.RefreshToken;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
+using AgrarianTradeSystemWebAPI.Services.EmailService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,10 +18,12 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
     {
         public readonly DataContext _context;
         public readonly IConfiguration _configuration;
-        public UserServices(DataContext context, IConfiguration configuration)
+        private readonly IEmailService _emailService;
+        public UserServices(DataContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         public static User user = new User();
@@ -240,18 +243,21 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 loginuser.PasswordResetToken = CreateCustomToken();
                 loginuser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
                 await _context.SaveChangesAsync();
+                _emailService.passwordResetEmail(loginuser.Email, loginuser.PasswordResetToken);
             }
             else if (loginFarmeruser != null)
             {
                 loginFarmeruser.PasswordResetToken = CreateCustomToken();
                 loginFarmeruser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
                 await _context.SaveChangesAsync();
+                _emailService.passwordResetEmail(loginFarmeruser.Email, loginFarmeruser.PasswordResetToken);
             }
             else if (loginCourieruser != null)
             {
                 loginCourieruser.PasswordResetToken = CreateCustomToken();
                 loginCourieruser.ResetTokenExpireAt = DateTime.Now.AddMinutes(10);
                 await _context.SaveChangesAsync();
+                _emailService.passwordResetEmail(loginCourieruser.Email, loginCourieruser.PasswordResetToken);
             }
             else
             {
@@ -268,24 +274,24 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-                loginuser.PasswordResetToken = null;
-                loginuser.ResetTokenExpireAt = null;
+                loginuser.PasswordResetToken = string.Empty;
+                loginuser.ResetTokenExpireAt = DateTime.MinValue.Date;
                 loginuser.PasswordHash = passwordHash;
                 await _context.SaveChangesAsync();
             }
             else if (loginFarmeruser != null && loginFarmeruser.ResetTokenExpireAt > DateTime.Now)
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-                loginFarmeruser.PasswordResetToken = null;
-                loginFarmeruser.ResetTokenExpireAt = null;
+                loginFarmeruser.PasswordResetToken = string.Empty;
+                loginFarmeruser.ResetTokenExpireAt = DateTime.MinValue.Date;
                 loginFarmeruser.PasswordHash = passwordHash;
                 await _context.SaveChangesAsync();
             }
             else if (loginCourieruser != null && loginCourieruser.ResetTokenExpireAt > DateTime.Now)
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
-                loginCourieruser.PasswordResetToken = null;
-                loginCourieruser.ResetTokenExpireAt = null;
+                loginCourieruser.PasswordResetToken = string.Empty;
+                loginCourieruser.ResetTokenExpireAt = DateTime.MinValue.Date;
                 loginCourieruser.PasswordHash = passwordHash;
                 await _context.SaveChangesAsync();
             }
