@@ -10,9 +10,10 @@ namespace AgrarianTradeSystemWebAPI.Dtos
         public string ProductImageUrl { get; set; } = string.Empty;
         public DateTime? DeliveryDate { get; set; }
         public DateTime? PickupDate { get; set; }
+        public DateTime OrderedDate { get; set; }=DateTime.Now;
         public decimal DeliveryFee { get; set; }
-        public string? OrderStatus { get; set; }
         public decimal TotalQuantity { get; set; }
+        public string? OrderStatus { get; set; }
         public string CustomerFName { get; set; } = string.Empty;
         public string CustomerLName { get; set; } = string.Empty;
         public string CustomerAddL1 { get; set; } = string.Empty;
