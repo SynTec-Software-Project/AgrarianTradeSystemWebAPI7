@@ -42,8 +42,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(products);
 		}
 
-
-
 		//get data by id
 		[HttpGet("{id}")]
 		public async Task<ActionResult<List<Product>>> GetSingleProduct(int id)
@@ -53,7 +51,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 				return NotFound("product is not found");
 			return Ok(result);
 		}
-
 
 		//post products
 		[HttpPost]
