@@ -9,7 +9,8 @@
 		public string ?DeliveryAddressLine3 { get; set; }
 		public string? OrderStatus { get; set; }
 		public decimal DeliveryFee { get; set; }
-		public DateTime OrderedDate { get; set; }= DateTime.Now;
+        public decimal TotalQuantity { get; set; }
+        public DateTime OrderedDate { get; set; }= DateTime.Now;
 		public decimal TotalPrice { get; set; }
 		public string? CourierID { get; set; }
 		public DateTime? PickupDate { get; set; }

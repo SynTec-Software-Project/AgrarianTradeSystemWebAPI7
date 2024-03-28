@@ -31,8 +31,9 @@ namespace AgrarianTradeSystemWebAPI.Services.NewOrderServices
 				TotalPrice = orderCreateModel.TotalPrice,
 				CourierID = orderCreateModel.CourierID,
 				PickupDate = orderCreateModel.PickupDate,
-				DeliveryDate = orderCreateModel.DeliveryDate
-			};
+				DeliveryDate = orderCreateModel.DeliveryDate,
+                TotalQuantity = orderCreateModel.TotalQuantity
+            };
 
 			_context.Orders.Add(order);
 			await _context.SaveChangesAsync();

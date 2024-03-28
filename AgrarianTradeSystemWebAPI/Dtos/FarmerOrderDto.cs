@@ -8,6 +8,7 @@
         public DateTime OrderedDate { get; set; }
         public decimal TotalPrice { get; set; }
         public string? OrderStatus { get; set; }
+        public decimal TotalQuantity { get; set; }
         public string CourierFName { get; set; } = string.Empty;
         public string CourierLName { get; set; } = string.Empty;
         public string CourierAddL1 { get; set; } = string.Empty;
