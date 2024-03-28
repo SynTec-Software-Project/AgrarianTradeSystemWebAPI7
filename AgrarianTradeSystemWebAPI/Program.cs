@@ -34,6 +34,7 @@ builder.Services.AddScoped(_ =>
 builder.Services.AddScoped<IFileServices, FileServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
 builder.Services.AddScoped<IOrderServices, OrderServices>();
+builder.Services.AddScoped<IReturnServices, ReturnServices>();
 
 //register Shopping cart Service
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
