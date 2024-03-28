@@ -6,7 +6,9 @@ namespace AgrarianTradeSystemWebAPI.Models
 {
 	public class Orders
 	{
-		[Key]
+        internal string orderId;
+
+        [Key]
 		public int OrderID { get; set; }
 		public string? BuyerID { get; set; }
         public int ProductID { get; set; }

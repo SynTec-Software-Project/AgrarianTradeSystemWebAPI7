@@ -139,20 +139,73 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             return Ok(orderDtos);
         }
 
-
-
         [HttpPut("{orderId}")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, string orderStatus)
         {
             try
             {
-                await _orderServices.UpdateOrderStatus(orderId,orderStatus);
+                await _orderServices.UpdateOrderStatus(orderId, orderStatus);
                 return Ok("Order status updated successfully");
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest("Failed to update order status: " + ex.Message);
             }
         }
+
+        // Get courier's order details by orderId
+        [HttpGet("courier/details/{orderId}")]
+        public async Task<ActionResult<List<CourierOrderDto>>> GetCourierOrderDetails(int orderId)
+        {
+            try
+            {
+                var orderDetails = await _orderServices.GetCourierOrderDetails(orderId);
+                if (orderDetails is null || orderDetails.Count == 0)
+                    return NotFound("No orders found for the orderId");
+
+                return Ok(orderDetails);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to get courier order details: " + ex.Message);
+            }
+        }
+
+        // Get farmer's order details by orderId
+        [HttpGet("farmer/details/{orderId}")]
+        public async Task<ActionResult<List<FarmerOrderDto>>> GetFarmerOrderDetails(int orderId)
+        {
+            try
+            {
+                var orderDetails = await _orderServices.GetFarmerOrderDetails(orderId);
+                if (orderDetails is null || orderDetails.Count == 0)
+                    return NotFound("No orders found for the orderId");
+
+                return Ok(orderDetails);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to get farmer order details: " + ex.Message);
+            }
+        }
+
+        // Get buyer's order details by orderId
+        [HttpGet("buyer/details/{orderId}")]
+        public async Task<ActionResult<List<BuyerOrderDto>>> GetBuyerOrderDetails(int orderId)
+        {
+            try
+            {
+                var orderDetails = await _orderServices.GetBuyerOrderDetails(orderId);
+                if (orderDetails is null || orderDetails.Count == 0)
+                    return NotFound("No orders found for the orderId");
+
+                return Ok(orderDetails);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to get buyer order details: " + ex.Message);
+            }
+        }
+
     }
 }

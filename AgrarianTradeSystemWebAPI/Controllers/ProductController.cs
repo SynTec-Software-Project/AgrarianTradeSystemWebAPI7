@@ -50,7 +50,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			{
 				return BadRequest("Invalid sort order. Use 'asc' or 'desc'.");
 			}
-
 			var products = await _productServices.GetAllProductsSortedByPrice(sortOrder.ToLower() == "asc");
 
 			return Ok(products);
@@ -76,6 +75,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
+
 		//get product and farmer's details by product id
 		[HttpGet("details/{id}")]
 		public async Task<ActionResult<ProductListDto>> GetSingleProductDto(int id)
@@ -89,7 +89,6 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 			return Ok(productDto);
 		}
-
 
 		//post products
 		[HttpPost]
