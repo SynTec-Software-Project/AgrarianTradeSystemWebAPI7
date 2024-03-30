@@ -1,4 +1,5 @@
 ﻿using AgrarianTradeSystemWebAPI.Data;
+using AgrarianTradeSystemWebAPI.Dtos;
 using AgrarianTradeSystemWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -73,5 +74,52 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
             await _context.SaveChangesAsync();
             return await _context.Reviews.ToListAsync();
         }
-    }
+
+        public ReviewDto GetReviewDetailsById(int id)
+		{
+			var review = _context.Reviews.FirstOrDefault(r => r.ReviewId == id);
+
+			if (review == null)
+			{
+				return null; // Return null if review with the given ID is not found
+			}
+
+			// Map Review entity to ReviewDto object
+			var reviewDto = new ReviewDto
+			{
+				ReviewId = review.ReviewId,
+				OrderID = review.OrderID,
+				Comment = review.Comment,
+				ReviewImageUrl = review.ReviewImageUrl,
+				ReviewDate = review.ReviewDate,
+				SellerRating = review.SellerRating,
+				DeliverRating = review.DeliverRating,
+				ProductRating = review.ProductRating
+				// Map other properties as needed
+			};
+
+			return reviewDto;
+		}
+
+		public IEnumerable<ReviewDto> GetAllReviewDetails()
+		{
+			var reviews = _context.Reviews.Include(r => r.Orders).ToList();
+			// Map Review entities to ReviewDto objects here
+			// You can use AutoMapper or manually map properties
+			return reviews.Select(review => new ReviewDto
+			{
+				ReviewId = review.ReviewId,
+				OrderID = review.OrderID,
+				ProductTitle = review.Orders.Product.ProductTitle,
+				ProductDescription = review.Orders.Product.ProductDescription,
+				ProductImageUrl = review.Orders.Product.ProductImageUrl,
+				Comment = review.Comment,
+				ReviewImageUrl = review.ReviewImageUrl,
+				ReviewDate = review.ReviewDate,
+				SellerRating = review.SellerRating,
+				DeliverRating = review.DeliverRating,
+				ProductRating = review.ProductRating
+			});
+		}
+	}
 }

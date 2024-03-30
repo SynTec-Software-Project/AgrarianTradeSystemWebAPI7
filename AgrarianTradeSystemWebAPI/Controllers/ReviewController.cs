@@ -63,6 +63,39 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             return Ok(result);
         }
 
+		[HttpGet("all-details")]
+		public IActionResult GetReviews()
+		{
+			try
+			{
+				var reviews = _reviewServices.GetAllReviewDetails();
+				return Ok(reviews);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
 
-    }
+		// GET: api/Review/{id}
+		[HttpGet("details/{id}")]
+		public IActionResult GetReviewById(int id)
+		{
+			try
+			{
+				var review = _reviewServices.GetReviewDetailsById(id);
+				if (review == null)
+				{
+					return NotFound("Review not found");
+				}
+				return Ok(review);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, $"Internal server error: {ex.Message}");
+			}
+		}
+
+
+	}
 }

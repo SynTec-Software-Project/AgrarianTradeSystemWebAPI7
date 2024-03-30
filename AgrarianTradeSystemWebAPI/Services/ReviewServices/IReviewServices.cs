@@ -1,4 +1,5 @@
-﻿using AgrarianTradeSystemWebAPI.Models;
+﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
@@ -13,5 +14,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
         Task<List<Review>?> UpdateReview(int id, Review request);
 
         Task<List<Review>?> DeleteReview(int id);
-    }
+        IEnumerable<ReviewDto> GetAllReviewDetails();
+        ReviewDto GetReviewDetailsById(int id);
+	}
 }

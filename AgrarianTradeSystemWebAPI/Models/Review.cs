@@ -1,4 +1,6 @@
-﻿namespace AgrarianTradeSystemWebAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace AgrarianTradeSystemWebAPI.Models
 {
     public class Review
     {
@@ -12,6 +14,7 @@
         public int DeliverRating { get; set; }
         public int ProductRating { get; set; }
 
+        [JsonIgnore]
         public Orders? Orders { get; set; }
     }
 }
