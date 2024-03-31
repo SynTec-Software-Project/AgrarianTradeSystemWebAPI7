@@ -55,6 +55,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            _emailService.SendRegisterEmail(user.Email, user.FirstName, user.LastName, user.VerificationToken);
         }
         public async Task FarmerRegister(FarmerDto request)
         {
@@ -82,6 +83,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
 
             _context.Farmers.Add(farmer);
             await _context.SaveChangesAsync();
+            _emailService.SendRegisterEmail(farmer.Email, farmer.FirstName, farmer.LastName, farmer.VerificationToken);
         }
         public async Task CourierRegister(CourierDto request)
         {
@@ -109,6 +111,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
 
             _context.Couriers.Add(courier);
             await _context.SaveChangesAsync();
+            _emailService.SendRegisterEmail(courier.Email, courier.FirstName, courier.LastName, courier.VerificationToken);
         }
         public async Task<TokenViewModel> Login(LoginDto request)
         {
@@ -122,6 +125,10 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     throw new LoginException("Email or password is incorrect");
                 }
+                if (loginUser.EmailVerified == false)
+                {
+                    throw new LoginException("Not verified");
+                }
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Email, loginUser.Email),
@@ -129,7 +136,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "User")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
                 loginUser.RefreshToken = GenerateRefreshToken();
                 loginUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
@@ -141,9 +147,13 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     throw new LoginException("Email or password is incorrect");
                 }
+                if (loginFarmerUser.EmailVerified == false)
+                {
+                    throw new LoginException("Not verified");
+                }
                 if (loginFarmerUser.Approved == false)
                 {
-                    throw new LoginException("Your account has not yet been approved. Thank you for your patience.");
+                    throw new LoginException("Not approved");
                 }
                 var authClaims = new List<Claim>
                 {
@@ -153,7 +163,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "Farmer")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
                 loginFarmerUser.RefreshToken = GenerateRefreshToken();
                 loginFarmerUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
@@ -165,9 +174,13 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     throw new LoginException("Email or password is incorrect");
                 }
+                if (loginCourierUser.EmailVerified == false)
+                {
+                    throw new LoginException("Not verified");
+                }
                 if (loginCourierUser.Approved == false)
                 {
-                    throw new LoginException("Your account has not yet been approved. Thank you for your patience.");
+                    throw new LoginException("Not approved");
                 }
                 var authClaims = new List<Claim>
                 {
@@ -176,7 +189,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                     new Claim(ClaimTypes.Role, "Courier")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
-                //_TokenViewModel.RefreshToken = GenerateRefreshToken();
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
                 loginCourierUser.RefreshToken = GenerateRefreshToken();
                 loginCourierUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
@@ -187,42 +199,64 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 throw new LoginException("Email or password is incorrect");
             }
             return _TokenViewModel;
-            //if (loginUser == null)
-            //{
-            //    throw new LoginException("Email or password is incorrect");
-            //}
-            //if (!BCrypt.Net.BCrypt.Verify(request.Password, loginUser.PasswordHash))
-            //{
-            //    throw new LoginException("Email or password is incorrect");
-            //}
-            //if (loginUser.EmailVerified == false)
-            //{
-            //    throw new LoginException("Email is not verified");
-            //}
-            //string token = CreateToken(loginUser);
-            //var refreshToken = GenerateRefreshToken();
-            //SetRefreshToken(refreshToken);
-            //return (token);
         }
-        public async Task<string> Verify(string token)
+        public async Task<string> GetVerifyLink(GetVerifyLinkDto request)
         {
-            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
-            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.VerificationToken == token);
-            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.VerificationToken == token);
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (loginuser != null)
             {
+                var token = loginuser.VerificationToken;
+                _emailService.verifyEmail(loginuser.Email, token);
+            }
+            else if (loginFarmeruser != null)
+            {
+                var token = loginFarmeruser.VerificationToken;
+                _emailService.verifyEmail(loginFarmeruser.Email, token);
+            }
+            else if (loginCourieruser != null)
+            {
+                var token = loginCourieruser.VerificationToken;
+                _emailService.verifyEmail(loginCourieruser.Email, token);
+            }
+            else
+            {
+                throw new Exception("Invalid Email");
+            }
+            return ("Email is sent");
+        }
+        public async Task<string> Verify(VerifyDto request)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == request.token);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.VerificationToken == request.token);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.VerificationToken == request.token);
+            if (loginuser != null)
+            {
+                if (loginuser.EmailVerified == true)
+                {
+                    throw new Exception("Your email is already verified");
+                }
                 loginuser.EmailVerified = true;
                 loginuser.VerifiedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
             else if (loginFarmeruser != null)
             {
+                if (loginFarmeruser.EmailVerified == true)
+                {
+                    throw new Exception("Your email is already verified");
+                }
                 loginFarmeruser.EmailVerified = true;
                 loginFarmeruser.VerifiedAt = DateTime.Now;
                 await _context.SaveChangesAsync();
             }
             else if (loginCourieruser != null)
             {
+                if (loginCourieruser.EmailVerified == true)
+                {
+                    throw new Exception("Already verified");
+                }
                 loginCourieruser.EmailVerified = true;
                 loginCourieruser.VerifiedAt = DateTime.Now;
                 await _context.SaveChangesAsync();

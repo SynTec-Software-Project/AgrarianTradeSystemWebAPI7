@@ -70,12 +70,26 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
-        [HttpPost("verify")]
-        public async Task<IActionResult> Verify(string token)
+        [HttpPost("getVerifyLink")]
+        public async Task<IActionResult> VerifyLink(GetVerifyLinkDto request)
         {
             try
             {
-                var result = await _userServices.Verify(token);
+                var result = await _userServices.GetVerifyLink(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("verify")]
+        public async Task<IActionResult> Verify(VerifyDto request)
+        {
+            try
+            {
+                var result = await _userServices.Verify(request);
                 return Ok(result);
             }
             catch (Exception ex)
