@@ -2,6 +2,7 @@
 using AgrarianTradeSystemWebAPI.Models.RefreshToken;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
 using AgrarianTradeSystemWebAPI.Services.EmailService;
+using AgrarianTradeSystemWebAPI.Services.ProductServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,11 +20,17 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public readonly DataContext _context;
         public readonly IConfiguration _configuration;
         private readonly IEmailService _emailService;
-        public UserServices(DataContext context, IConfiguration configuration, IEmailService emailService)
+        private const string AzureContainerProfileImg = "profilepic";
+        private const string AzureContainerNICImg = "nicimage";
+        private const string AzureContainerVehicleImg = "vehicleimage";
+        private const string AzureContainerGNSImg = "gramaniladhari";
+        private readonly IFileServices _fileServices;
+        public UserServices(DataContext context, IConfiguration configuration, IEmailService emailService, IFileServices fileServices)
         {
             _context = context;
             _configuration = configuration;
             _emailService = emailService;
+            _fileServices = fileServices;
         }
 
         public static User user = new User();
@@ -51,11 +58,12 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             user.AddL1 = request.AddressLine1;
             user.AddL2 = request.AddressLine2;
             user.AddL3 = request.AddressLine3;
+            user.ProfileImg = request.ProfileImg;
             user.VerificationToken = CreateCustomToken();
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            _emailService.SendRegisterEmail(user.Email, user.FirstName, user.LastName, user.VerificationToken);
+            _emailService.SendUserRegisterEmail(user.Email, user.FirstName, user.LastName, user.VerificationToken);
         }
         public async Task FarmerRegister(FarmerDto request)
         {
@@ -79,6 +87,10 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             farmer.AddL2 = request.AddressLine2;
             farmer.AddL3 = request.AddressLine3;
             farmer.CropDetails = request.CropDetails;
+            farmer.ProfileImg = request.ProfileImg;
+            farmer.NICFrontImg = request.NICFrontImg;
+            farmer.NICBackImg = request.NICBackImg;
+            farmer.GSLetterImg = request.GNCImage;
             farmer.VerificationToken = CreateCustomToken();
 
             _context.Farmers.Add(farmer);
@@ -107,6 +119,9 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             courier.AddL2 = request.AddressLine2;
             courier.AddL3 = request.AddressLine3;
             courier.VehicleNo = request.VehicleNumber;
+            courier.ProfileImg = request.ProfileImg;
+            courier.VehicleImg = request.VehicleImg;
+            courier.LicenseImg = request.LicenseImg;
             courier.VerificationToken = CreateCustomToken();
 
             _context.Couriers.Add(courier);
@@ -235,7 +250,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             {
                 if (loginuser.EmailVerified == true)
                 {
-                    throw new Exception("Your email is already verified");
+                    throw new Exception("Already verified");
                 }
                 loginuser.EmailVerified = true;
                 loginuser.VerifiedAt = DateTime.Now;
@@ -245,7 +260,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             {
                 if (loginFarmeruser.EmailVerified == true)
                 {
-                    throw new Exception("Your email is already verified");
+                    throw new Exception("Already verified");
                 }
                 loginFarmeruser.EmailVerified = true;
                 loginFarmeruser.VerifiedAt = DateTime.Now;
