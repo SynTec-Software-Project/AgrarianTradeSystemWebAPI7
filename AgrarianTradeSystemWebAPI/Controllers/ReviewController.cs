@@ -12,20 +12,21 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
         private readonly IReviewServices _reviewServices;
 
+
         public ReviewController(IReviewServices reviewServices)
         {
             _reviewServices = reviewServices;
             
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Review>>> GetAllReview()
-        {
+		[HttpGet("All")]
+		public async Task<IActionResult> GetAllReviews()
+		{
+			var reviews = await _reviewServices.GetAllReview();
+			return Ok(reviews);
+		}
 
-            return await _reviewServices.GetAllReview();
-        }
-
-        [HttpGet("{id}")]
+		[HttpGet("{id}")]
         public async Task<ActionResult<List<Review>>> GetSingleReview(int id)
         {
             var result = await _reviewServices.GetSingleReview(id);
@@ -63,37 +64,32 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             return Ok(result);
         }
 
-		[HttpGet("all-details")]
-		public IActionResult GetReviews()
+      
+		[HttpGet("to-review")]
+		public async Task<IActionResult> GetOrdersWithStatusReview()
 		{
-			try
-			{
-				var reviews = _reviewServices.GetAllReviewDetails();
-				return Ok(reviews);
-			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
-			}
+			var orders = await _reviewServices.GetOrdersToReview();
+			return Ok(orders);
 		}
 
-		// GET: api/Review/{id}
-		[HttpGet("details/{id}")]
-		public IActionResult GetReviewById(int id)
+		[HttpPut("{id}/add-reply")]
+		public async Task<IActionResult> UpdateReviewReply(int id, [FromBody] string reply)
 		{
-			try
+			var updatedReview = await _reviewServices.AddReviewReply(id, reply);
+
+			if (updatedReview == null)
 			{
-				var review = _reviewServices.GetReviewDetailsById(id);
-				if (review == null)
-				{
-					return NotFound("Review not found");
-				}
-				return Ok(review);
+				return NotFound(); // Return 404 Not Found if review with the given ID is not found
 			}
-			catch (Exception ex)
-			{
-				return StatusCode(500, $"Internal server error: {ex.Message}");
-			}
+
+			return Ok(updatedReview);
+		}
+
+		[HttpGet("product/{productId}")]
+		public async Task<IActionResult> GetReviewsByProductID(int productId)
+		{
+			var reviews = await _reviewServices.GetReviewsByProductID(productId);
+			return Ok(reviews);
 		}
 
 
