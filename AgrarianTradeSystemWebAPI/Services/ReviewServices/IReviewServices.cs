@@ -6,15 +6,23 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 {
     public interface IReviewServices
     {
-        Task<List<Review>> GetAllReview();
-        Task<Review?> GetSingleReview(int id);
+      
+		Task<Review?> GetSingleReview(int id);
 
-        Task<List<Review>> AddReview(Review review);
+        Task<List<Review>> GetAllReview();
+
+		Task<List<Review>> AddReview(Review review);
 
         Task<List<Review>?> UpdateReview(int id, Review request);
 
         Task<List<Review>?> DeleteReview(int id);
-        IEnumerable<ReviewDto> GetAllReviewDetails();
-        ReviewDto GetReviewDetailsById(int id);
+   
+        Task<List<ReviewOrdersDto>> GetOrdersToReview();
+
+        Task<Review> AddReviewReply(int id, string reply);
+
+        Task<List<Review>> GetReviewsByProductID(int productId);
+        List<ReviewDto> GetAllReviewDetails();
 	}
+
 }

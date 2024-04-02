@@ -6,120 +6,138 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 {
-    public class ReviewServices : IReviewServices
-    {
-        private readonly DataContext _context;
-        public ReviewServices(DataContext context) {
-            _context = context;
-        }
-        public DataContext Context { get; }
-
-
-        //get all data
-        public async Task<List<Review>> GetAllReview()
-        {
-
-            var reviews = await _context.Reviews.ToListAsync(); //retrieve data from db
-            return reviews;
-        }
-
-        //get single data by id
-        public async Task<Review?> GetSingleReview(int id)
-        {
-            var review = await _context.Reviews.FindAsync(id);  //find data from db
-            if (review == null)
-                return null;
-            return review;
-        }
-
-
-        //add
-        public async Task<List<Review>> AddReview(Review review)
-{
-            _context.Reviews.Add(review);
-            await _context.SaveChangesAsync();
-            return await _context.Reviews.ToListAsync();
-        }
-
-
-        //update
-        public async Task<List<Review>?> UpdateReview(int id, Review request)
-        {
-            var review = await _context.Reviews.FindAsync(id); //find data from db
-            if (review == null)
-                return null;
-
-            review.Comment = request.Comment;
-            review.SellerRating = request.SellerRating;
-            review.ReviewImageUrl = request.ReviewImageUrl;
-            review.ProductRating = request.ProductRating;
-            review.DeliverRating = request.DeliverRating;
-            
-
-            await _context.SaveChangesAsync();
-
-
-            return await _context.Reviews.ToListAsync();
-        }
-
-        //delete
-        public async Task<List<Review>?> DeleteReview(int id)
-        {
-            var review = await _context.Reviews.FindAsync(id); //find data from db
-            if (review == null)
-                return null;
-
-            _context.Reviews.Remove(review);
-
-            await _context.SaveChangesAsync();
-            return await _context.Reviews.ToListAsync();
-        }
-
-        public ReviewDto GetReviewDetailsById(int id)
+	public class ReviewServices : IReviewServices
+	{
+		private readonly DataContext _context;
+		public ReviewServices(DataContext context)
 		{
-			var review = _context.Reviews.FirstOrDefault(r => r.ReviewId == id);
+			_context = context;
+		}
+		public DataContext Context { get; }
+
+
+		//get all data
+		public async Task<List<Review>> GetAllReview()
+		{
+
+			var reviews = await _context.Reviews.ToListAsync(); //retrieve data from db
+			return reviews;
+		}
+
+		//get single data by id
+		public async Task<Review?> GetSingleReview(int id)
+		{
+			var review = await _context.Reviews.FindAsync(id);  //find data from db
+			if (review == null)
+				return null;
+			return review;
+		}
+
+
+		//add
+		public async Task<List<Review>> AddReview(Review review)
+		{
+			_context.Reviews.Add(review);
+			await _context.SaveChangesAsync();
+			return await _context.Reviews.ToListAsync();
+		}
+
+
+		//update review
+		public async Task<List<Review>?> UpdateReview(int id, Review request)
+		{
+			var review = await _context.Reviews.FindAsync(id); //find data from db
+			if (review == null)
+				return null;
+
+			review.Comment = request.Comment;
+			review.SellerRating = request.SellerRating;
+			review.ReviewImageUrl = request.ReviewImageUrl;
+			review.ProductRating = request.ProductRating;
+			review.DeliverRating = request.DeliverRating;
+
+
+			await _context.SaveChangesAsync();
+
+
+			return await _context.Reviews.ToListAsync();
+		}
+
+		//delete review
+		public async Task<List<Review>?> DeleteReview(int id)
+		{
+			var review = await _context.Reviews.FindAsync(id); //find data from db
+			if (review == null)
+				return null;
+
+			_context.Reviews.Remove(review);
+
+			await _context.SaveChangesAsync();
+			return await _context.Reviews.ToListAsync();
+		}
+		//get orders to review
+		public async Task<List<ReviewOrdersDto>> GetOrdersToReview()
+		{
+			var reviewOrders = await _context.Orders
+				.Where(o => o.OrderStatus == "review")
+				.Select(o => new ReviewOrdersDto
+				{
+					OrderID = o.OrderID,
+					ProductID = o.ProductID,
+					ProductName = o.Product.ProductTitle,
+					ProductDescription = o.Product.ProductDescription,
+					ProductImageUrl = o.Product.ProductImageUrl
+				})
+				.ToListAsync();
+
+			return reviewOrders;
+		}
+
+		public async Task<Review> AddReviewReply(int id, string reply)
+		{
+			var review = await _context.Reviews.FindAsync(id);
 
 			if (review == null)
 			{
 				return null; // Return null if review with the given ID is not found
 			}
 
-			// Map Review entity to ReviewDto object
-			var reviewDto = new ReviewDto
-			{
-				ReviewId = review.ReviewId,
-				OrderID = review.OrderID,
-				Comment = review.Comment,
-				ReviewImageUrl = review.ReviewImageUrl,
-				ReviewDate = review.ReviewDate,
-				SellerRating = review.SellerRating,
-				DeliverRating = review.DeliverRating,
-				ProductRating = review.ProductRating
-				// Map other properties as needed
-			};
+			review.Reply = reply;
+			await _context.SaveChangesAsync();
 
-			return reviewDto;
+			return review;
 		}
 
-		public IEnumerable<ReviewDto> GetAllReviewDetails()
+		public async Task<List<Review>> GetReviewsByProductID(int productId)
 		{
-			var reviews = _context.Reviews.Include(r => r.Orders).ToList();
-			// Map Review entities to ReviewDto objects here
-			// You can use AutoMapper or manually map properties
-			return reviews.Select(review => new ReviewDto
+			return await _context.Reviews
+				.Where(r => r.Orders != null && r.Orders.ProductID == productId)
+				.ToListAsync();
+		}
+		//get history
+		public List<ReviewDto> GetAllReviewDetails()
+		{
+			var reviews = _context.Reviews
+								  .Include(r => r.Orders)
+								  .ToList();
+
+			var reviewDtos = reviews.Select(review => new ReviewDto
 			{
 				ReviewId = review.ReviewId,
 				OrderID = review.OrderID,
-				ProductTitle = review.Orders.Product.ProductTitle,
-				ProductDescription = review.Orders.Product.ProductDescription,
-				ProductImageUrl = review.Orders.Product.ProductImageUrl,
+				ProductTitle = review.Orders?.Product?.ProductTitle ?? string.Empty,
+				ProductDescription = review.Orders?.Product?.ProductDescription,
+				ProductImageUrl = review.Orders?.Product?.ProductImageUrl ?? string.Empty,
 				Comment = review.Comment,
 				ReviewImageUrl = review.ReviewImageUrl,
 				ReviewDate = review.ReviewDate,
 				SellerRating = review.SellerRating,
 				DeliverRating = review.DeliverRating,
 				ProductRating = review.ProductRating
-			});
+			}).ToList(); // Convert to List<ReviewDto>
+
+			return reviewDtos;
 		}
 	}
+
 }
