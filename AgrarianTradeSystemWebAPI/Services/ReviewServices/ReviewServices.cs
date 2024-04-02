@@ -42,7 +42,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 			return await _context.Reviews.ToListAsync();
 		}
 
-		 
+
 		//update review
 		public async Task<List<Review>?> UpdateReview(int id, Review request)
 		{
@@ -113,6 +113,30 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 			return await _context.Reviews
 				.Where(r => r.Orders != null && r.Orders.ProductID == productId)
 				.ToListAsync();
+		}
+		//get history
+		public List<ReviewDto> GetAllReviewDetails()
+		{
+			var reviews = _context.Reviews
+								  .Include(r => r.Orders)
+								  .ToList();
+
+			var reviewDtos = reviews.Select(review => new ReviewDto
+			{
+				ReviewId = review.ReviewId,
+				OrderID = review.OrderID,
+				ProductTitle = review.Orders?.Product?.ProductTitle ?? string.Empty,
+				ProductDescription = review.Orders?.Product?.ProductDescription,
+				ProductImageUrl = review.Orders?.Product?.ProductImageUrl ?? string.Empty,
+				Comment = review.Comment,
+				ReviewImageUrl = review.ReviewImageUrl,
+				ReviewDate = review.ReviewDate,
+				SellerRating = review.SellerRating,
+				DeliverRating = review.DeliverRating,
+				ProductRating = review.ProductRating
+			}).ToList(); // Convert to List<ReviewDto>
+
+			return reviewDtos;
 		}
 	}
 

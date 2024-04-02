@@ -9,6 +9,7 @@ namespace AgrarianTradeSystemWebAPI
 		public AutoMapperProfile() {
 			//CreateMap<Product, ProductDto>();
 			CreateMap<ProductDto, Product>();
+			CreateMap<AddReviewDto, Review>();
 		}
 	}
 }
