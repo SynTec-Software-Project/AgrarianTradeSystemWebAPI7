@@ -67,5 +67,33 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("denyFarmer")]
+        public async Task<IActionResult> DenyFarmer(UserDenyDto request)
+        {
+            try
+            {
+                var result = await _adminServices.DenyFarmer(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("denyCourier")]
+        public async Task<IActionResult> DenyCourier(UserDenyDto request)
+        {
+            try
+            {
+                var result = await _adminServices.DenyCourier(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

@@ -88,5 +88,42 @@ namespace AgrarianTradeSystemWebAPI.Services.EmailService
             smtp.Disconnect(true);
         }
 
+        public void rejectUserMail(string to, string fname, string lname, string reasons)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailConfig:EmailUsername").Value));
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = "Application Rejected - Agrarian Trading System";
+            email.Body = new TextPart(TextFormat.Html)
+            {
+                Text = $"<html><body><h3>{fname} {lname},</h3><p>We are sorry to inform that your application has been denied due to following reasons." +
+                $" Please consider them and apply again.</p>" +
+                $"<p>{reasons}</p>"
+            };
+            using var smtp = new SmtpClient();
+            smtp.Connect(_config.GetSection("EmailConfig:EmailHost").Value, 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_config.GetSection("EmailConfig:EmailUsername").Value, _config.GetSection("EmailConfig:EmailPassword").Value);
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+
+        public void approveUserMail(string to, string fname, string lname)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailConfig:EmailUsername").Value));
+            email.To.Add(MailboxAddress.Parse(to));
+            email.Subject = "Application Approved - Agrarian Trading System";
+            email.Body = new TextPart(TextFormat.Html)
+            {
+                Text = $"<html><body><h3>{fname} {lname},</h3><p>We are happy to inform that your application has been approved. You can start you business right now.</p>" +
+                $"</body></html>"
+            };
+            using var smtp = new SmtpClient();
+            smtp.Connect(_config.GetSection("EmailConfig:EmailHost").Value, 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_config.GetSection("EmailConfig:EmailUsername").Value, _config.GetSection("EmailConfig:EmailPassword").Value);
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
+
     }
 }

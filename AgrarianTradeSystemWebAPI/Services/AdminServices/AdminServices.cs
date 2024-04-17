@@ -2,16 +2,20 @@
 using AgrarianTradeSystemWebAPI.Models;
 using AgrarianTradeSystemWebAPI.Models.AdminModels;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
+using AgrarianTradeSystemWebAPI.Services.EmailService;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.Metrics;
 
 namespace AgrarianTradeSystemWebAPI.Services.AdminServices
 {
     public class AdminServices : IAdminServices
     {
         private readonly DataContext _context;
-        public AdminServices(DataContext context)
+        private readonly IEmailService _emailService;
+        public AdminServices(DataContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         public async Task<List<GetCourierModel>> GetAllNewCouriers()
@@ -87,7 +91,9 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
                     AddL3 = farmer.AddL3,
                     ProfileImg = farmer.ProfileImg,
                     CropTypes = farmer.CropDetails,
-                    GNCertificate = farmer.GSLetterImg
+                    GNCertificate = farmer.GSLetterImg,
+                    NICFront = farmer.NICFrontImg,
+                    NICBack = farmer.NICBackImg,
                 };
                 newFarmerModels.Add(getFarmerModel);
 
@@ -114,7 +120,9 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
                     AddL3 = farmer.AddL3,
                     ProfileImg = farmer.ProfileImg,
                     CropTypes = farmer.CropDetails,
-                    GNCertificate = farmer.GSLetterImg
+                    GNCertificate = farmer.GSLetterImg,
+                    NICFront = farmer.NICFrontImg,
+                    NICBack = farmer.NICBackImg,
                 };
                 newFarmerModels.Add(getFarmerModel);
 
@@ -129,6 +137,7 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
             {
                 throw new AdminErrorException("Invalid Email");
             }
+            _emailService.approveUserMail(request, courier.FirstName, courier.LastName);
             courier.Approved = true;
             await _context.SaveChangesAsync();
             return ("Approved successfully");
@@ -140,9 +149,36 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
             {
                 throw new AdminErrorException("Invalid Email");
             }
+            _emailService.approveUserMail(request, farmer.FirstName, farmer.LastName);
             farmer.Approved = true;
             await _context.SaveChangesAsync();
             return ("Approved successfully");
+        }
+
+        public async Task<string> DenyFarmer(UserDenyDto request)
+        {
+            var farmer = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (farmer == null)
+            {
+                throw new AdminErrorException("Invalid Email");
+            }
+            _emailService.rejectUserMail(request.Email, farmer.FirstName, farmer.LastName, request.Reason);
+            _context.Farmers.Remove(farmer);
+            await _context.SaveChangesAsync();
+            return ("Farmer denied");
+        }
+
+        public async Task<string> DenyCourier(UserDenyDto request)
+        {
+            var courier = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (courier == null)
+            {
+                throw new AdminErrorException("Invalid Email");
+            }
+            _emailService.rejectUserMail(request.Email, courier.FirstName, courier.LastName, request.Reason);
+            _context.Couriers.Remove(courier);
+            await _context.SaveChangesAsync();
+            return ("Courier denied");
         }
     }
 }

@@ -14,5 +14,7 @@
         public string ProfileImg { get; set; } = string.Empty;
         public string CropTypes { get; set; } = string.Empty;
         public string GNCertificate { get; set; } = string.Empty;
+        public string NICFront { get; set; } = string.Empty;
+        public string NICBack { get; set; } = string.Empty;
     }
 }

@@ -3,6 +3,7 @@ using AgrarianTradeSystemWebAPI.Models.UserModels;
 using Microsoft.AspNetCore.Cors;
 using AgrarianTradeSystemWebAPI.Services.UserServices;
 using AgrarianTradeSystemWebAPI.Services.ProductServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
@@ -177,6 +178,49 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             try
             {
                 var result = await _userServices.ResetPassword(request);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("getUserDetails")]
+        public async Task<IActionResult> GetUserDetails(string email)
+        {
+            try
+            {
+                var result = await _userServices.GetUserDetails(email);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("changeUserDetails")]
+        public async Task<IActionResult> ChangeUserDetails(ChangeDetailsDto request)
+        {
+            try
+            {
+                var result = await _userServices.ChangeUserDetails(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("changePassword")]
+        public async Task<IActionResult> ChangePassword(ChangePwdDto request)
+        {
+            try
+            {
+                var result = await _userServices.ChangePwd(request);
                 return Ok(result);
             }
             catch(Exception ex)

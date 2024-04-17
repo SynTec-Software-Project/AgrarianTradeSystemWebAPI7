@@ -12,5 +12,7 @@ namespace AgrarianTradeSystemWebAPI.Services.AdminServices
         Task<List<GetFarmerModel>> GetAllApprovedFarmers();
         Task<string> ApproveFarmer(string request);
         Task<string> ApproveCourier(string request);
+        Task<string> DenyFarmer(UserDenyDto request);
+        Task<string> DenyCourier(UserDenyDto request);
     }
 }

@@ -9,5 +9,7 @@ namespace AgrarianTradeSystemWebAPI.Services.EmailService
         void SendRegisterEmail(string to, string fname, string lname, string token);
         void passwordResetEmail(string to, string token);
         void verifyEmail(string to, string token);
+        void rejectUserMail(string to, string fname, string lname, string reasons);
+        void approveUserMail(string to, string fname, string lname);
     }
 }
