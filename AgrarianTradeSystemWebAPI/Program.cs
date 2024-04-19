@@ -70,24 +70,36 @@ builder.Services.AddCors(option =>
         policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
 });
 
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthentication()
+.AddJwtBearer("JwtBearer", jwtBearerOptions =>
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    jwtBearerOptions.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey:SecretKey"]!)),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = false,
+    };
 });
+
+//builder.Services.AddAuthentication(options =>
+//{
+//	options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//	options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//	options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 //}).AddJwtBearer(options =>
 //            {
 //                options.SaveToken = true;
 //                options.RequireHttpsMetadata = false;
 //                options.TokenValidationParameters = new TokenValidationParameters()
 //                {
-//                    ValidateIssuer = true,
-//                    ValidateAudience = true,
+//                    ValidateIssuer = false,
+//                    ValidateAudience = false,
 //                    ValidAudience = builder.Configuration["JWTKey:ValidAudience"],
 //                    ValidIssuer = builder.Configuration["JWTKey:ValidIssuer"],
 //                    ClockSkew = TimeSpan.Zero,
-//                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey:Secret"]!))
+//                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTKey:SecretKey"]!))
 //                };
 //            });
 
@@ -96,15 +108,17 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
+    app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+
+app.UseAuthorization();
 
 app.UseHttpsRedirection();
 
 app.UseCors("ReactJSDomain");
-
-app.UseAuthorization();
 
 app.MapControllers();
 

@@ -37,6 +37,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public static Farmer farmer = new Farmer();
         public static Courier courier = new Courier();
 
+        // User registration service ----------------------------------------
         public async Task UserRegister(UserDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -65,6 +66,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             await _context.SaveChangesAsync();
             _emailService.SendUserRegisterEmail(user.Email, user.FirstName, user.LastName, user.VerificationToken);
         }
+
+        // Farmer registration service -----------------------------------
         public async Task FarmerRegister(FarmerDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -97,6 +100,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             await _context.SaveChangesAsync();
             _emailService.SendRegisterEmail(farmer.Email, farmer.FirstName, farmer.LastName, farmer.VerificationToken);
         }
+
+        // Courier registration service -------------------------------------
         public async Task CourierRegister(CourierDto request)
         {
             var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -128,6 +133,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             await _context.SaveChangesAsync();
             _emailService.SendRegisterEmail(courier.Email, courier.FirstName, courier.LastName, courier.VerificationToken);
         }
+
+        // Login service ----------------------------------------------
         public async Task<TokenViewModel> Login(LoginDto request)
         {
             TokenViewModel _TokenViewModel = new();
@@ -152,7 +159,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginUser.RefreshToken = GenerateRefreshToken();
                 loginUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -174,12 +180,10 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 {
                     new Claim(ClaimTypes.Email, loginFarmerUser.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.Role, "User"),
                     new Claim(ClaimTypes.Role, "Farmer")
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginFarmerUser.RefreshToken = GenerateRefreshToken();
                 loginFarmerUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -205,7 +209,6 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
                 };
                 _TokenViewModel.AccessToken = GenerateToken(authClaims);
                 var _RefreshTokenValidityInDays = Convert.ToInt64(_configuration.GetSection("RefreshTokenValidityInDays").Value!);
-                loginCourierUser.RefreshToken = GenerateRefreshToken();
                 loginCourierUser.RefreshTokenExpiryTime = DateTime.Now.AddDays(_RefreshTokenValidityInDays);
                 await _context.SaveChangesAsync();
             }
@@ -215,6 +218,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             }
             return _TokenViewModel;
         }
+
+        // Getting verification link through email --------------------------------
         public async Task<string> GetVerifyLink(GetVerifyLinkDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -241,6 +246,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             }
             return ("Email is sent");
         }
+
+        // Verifing the email --------------------------------------------
         public async Task<string> Verify(VerifyDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == request.token);
@@ -282,6 +289,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             }
             return ("Email Verified");
         }
+
+        // Sending forgot password changing token through email -------------------------------------
         public async Task<string> ForgotPassword(ForgotPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -314,6 +323,8 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             }
             return ("Reset within 10 minutes");
         }
+
+        // Changing the forgot password ---------------------------------------------
         public async Task<string> ResetPassword(ResetPasswordDto request)
         {
             var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
@@ -350,13 +361,17 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             }
             return ("Password Successfully Reset");
         }
+
+        // Generating JWT token ---------------------------------------------------------
         private string GenerateToken(IEnumerable<Claim> claims)
         {
             var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTKey:SecretKey").Value!));
-            var TokenExpireTime = Convert.ToInt64(_configuration.GetSection("JWTKey:TokenExpiryTimeInHour").Value!);
+            //var TokenExpireTime = Convert.ToInt64(_configuration.GetSection("JWTKey:TokenExpiryTimeInHour").Value!);
+            var TokenExpireTime = Convert.ToInt64(_configuration.GetSection("JWTKey:TokenExpiryTimeInMinutes").Value!);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Expires = DateTime.UtcNow.AddHours(TokenExpireTime),
+                //Expires = DateTime.UtcNow.AddHours(TokenExpireTime),
+                Expires = DateTime.UtcNow.AddMinutes(TokenExpireTime),
                 SigningCredentials = new SigningCredentials(authKey, SecurityAlgorithms.HmacSha256),
                 Subject = new ClaimsIdentity(claims)
             };
@@ -364,82 +379,167 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-        //public string CreateToken(User user)
-        //{
-        //    List<Claim> claims = new List<Claim>
-        //    {
-        //        new Claim(ClaimTypes.Name, user.Username)
-        //    };
-        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-        //        _configuration.GetSection("AppSettings:Token").Value!));
-        //    var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        //    var token = new JwtSecurityToken(
-        //            claims: claims,
-        //            expires: DateTime.Now.AddDays(1),
-        //            signingCredentials: cred
-        //        );
-        //    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        //    return jwt;
-        //}
-        public async Task<TokenViewModel> GetRefreshToken(GetRefreshTokenViewModel model)
-        {
-            TokenViewModel _TokenViewModel = new();
-            var principal = GetPrincipalFromExpiredToken(model.AccessToken!);
 
-            string? email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-            if (user == null || user.RefreshToken != model.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-            {
-                throw new Exception("Invalid token or refresh token");
-            }
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-            var newAccessToken = GenerateToken(authClaims);
-            var newRefreshToken = GenerateRefreshToken();
-            user.RefreshToken = newAccessToken;
-            await _context.SaveChangesAsync();
-            _TokenViewModel.AccessToken = newAccessToken;
-            return _TokenViewModel;
-
-        }
-        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
-        {
-            var tokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTKey:SecretKey").Value!)),
-                ValidateLifetime = false
-            };
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
-            if (securityToken is not JwtSecurityToken jwtSecurityToken || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-            {
-                throw new SecurityTokenException("Invalid Token");
-            }
-            return principal;
-        }
-        //public RefreshToken GenerateRefreshToken()
-        //{
-        //    var refreshToken = new RefreshToken
-        //    {
-        //        Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-        //        Expires = DateTime.Now.AddDays(1)
-        //    };
-        //    return refreshToken;
-        //}
-        private static string GenerateRefreshToken()
-        {
-            var randomNumber = new byte[64];
-            using var rng = RandomNumberGenerator.Create();
-            rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
+        // Function for generating GUID (Globally Unique IDentifier) -------------------------------------
         public string CreateCustomToken()
         {
             return Guid.NewGuid().ToString();
+        }
+
+        // Service for getting user details for display ------------------------------------------
+        public async Task<GetDetailsModel> GetUserDetails(string Email)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == Email);
+            GetDetailsModel _getUserDetails = new();
+            if(loginuser != null)
+            {
+                _getUserDetails.FName = loginuser.FirstName;
+                _getUserDetails.LName = loginuser.LastName;
+                _getUserDetails.UserName = loginuser.Username;
+                _getUserDetails.AddL1 = loginuser.AddL1;
+                _getUserDetails.AddL2 = loginuser.AddL2;
+                _getUserDetails.AddL3 = loginuser.AddL3;
+                _getUserDetails.PhoneNumber = loginuser.PhoneNumber;
+                _getUserDetails.Profilepic = loginuser.ProfileImg;
+            }
+            else if(loginFarmeruser != null)
+            {
+                _getUserDetails.FName = loginFarmeruser.FirstName;
+                _getUserDetails.LName = loginFarmeruser.LastName;
+                _getUserDetails.UserName = loginFarmeruser.Username;
+                _getUserDetails.AddL1 = loginFarmeruser.AddL1;
+                _getUserDetails.AddL2 = loginFarmeruser.AddL2;
+                _getUserDetails.AddL3 = loginFarmeruser.AddL3;
+                _getUserDetails.PhoneNumber = loginFarmeruser.PhoneNumber;
+                _getUserDetails.Profilepic = loginFarmeruser.ProfileImg;
+            }
+            else if(loginCourieruser != null)
+            {
+                _getUserDetails.FName = loginCourieruser.FirstName;
+                _getUserDetails.LName = loginCourieruser.LastName;
+                _getUserDetails.UserName = loginCourieruser.Username;
+                _getUserDetails.AddL1 = loginCourieruser.AddL1;
+                _getUserDetails.AddL2 = loginCourieruser.AddL2;
+                _getUserDetails.AddL3 = loginCourieruser.AddL3;
+                _getUserDetails.PhoneNumber = loginCourieruser.PhoneNumber;
+                _getUserDetails.Profilepic = loginCourieruser.ProfileImg;
+            }
+            else
+            {
+                throw new Exception("Invalid Email");
+            }
+            return _getUserDetails;
+        }
+        
+        // Changing user details service -------------------------------------------
+        public async Task<string> ChangeUserDetails(ChangeDetailsDto request)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if(loginuser != null)
+            {
+                loginuser.FirstName = request.FName;
+                loginuser.LastName = request.LName;
+                loginuser.Username = request.UserName;
+                loginuser.AddL1 = request.AddL1;
+                loginuser.AddL2 = request.AddL2;
+                loginuser.AddL3 = request.AddL3;
+                loginuser.PhoneNumber = request.PhoneNumber;
+                await _context.SaveChangesAsync();
+            }
+            else if(loginFarmeruser != null)
+            {
+                loginFarmeruser.FirstName = request.FName;
+                loginFarmeruser.LastName = request.LName;
+                loginFarmeruser.Username = request.UserName;
+                loginFarmeruser.AddL1 = request.AddL1;
+                loginFarmeruser.AddL2 = request.AddL2;
+                loginFarmeruser.AddL3 = request.AddL3;
+                loginFarmeruser.PhoneNumber = request.PhoneNumber;
+                await _context.SaveChangesAsync();
+            }
+            else if(loginCourieruser != null)
+            {
+                loginCourieruser.FirstName = request.FName;
+                loginCourieruser.LastName = request.LName;
+                loginCourieruser.Username = request.UserName;
+                loginCourieruser.AddL1 = request.AddL1;
+                loginCourieruser.AddL2 = request.AddL2;
+                loginCourieruser.AddL3 = request.AddL3;
+                loginCourieruser.PhoneNumber= request.PhoneNumber;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Invalid Email");
+            }
+            return ("Details changed");
+        }
+
+        // Service for changing profile image -----------------------------------------------
+        public async Task<string> ChangeProfileImg(ChangeProfileImgDto request)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (loginuser != null)
+            {
+                var existingProfileImg = loginuser.ProfileImg;
+                await _fileServices.Delete(existingProfileImg, AzureContainerProfileImg);
+                loginuser.ProfileImg = request.ProfileImg;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmeruser != null)
+            {
+                var existingProfileImg = loginFarmeruser.ProfileImg;
+                await _fileServices.Delete(existingProfileImg, AzureContainerProfileImg);
+                loginFarmeruser.ProfileImg = request.ProfileImg;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourieruser != null)
+            {
+                var existingProfileImg = loginCourieruser.ProfileImg;
+                await _fileServices.Delete(existingProfileImg, AzureContainerProfileImg);
+                loginCourieruser.ProfileImg = request.ProfileImg;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Invalid email");
+            }
+            return ("Profile Img changed");
+        }
+
+        // Service for change user password --------------------------------------------------------
+        public async Task<string> ChangePwd(ChangePwdDto request)
+        {
+            var loginuser = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginFarmeruser = await _context.Farmers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var loginCourieruser = await _context.Couriers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(request.NewPassword);
+            if (loginuser != null)
+            {
+                loginuser.PasswordHash = passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginFarmeruser != null)
+            {
+                loginFarmeruser.PasswordHash = passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else if (loginCourieruser != null)
+            {
+                loginCourieruser.PasswordHash= passwordHash;
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new Exception("Invalid email");
+            }
+            return ("Password changed");
         }
     }
 }

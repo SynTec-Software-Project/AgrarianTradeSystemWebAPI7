@@ -12,13 +12,14 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         public Task FarmerRegister(FarmerDto request);
         public Task CourierRegister(CourierDto request);
         public Task<TokenViewModel> Login(LoginDto request);
-        //public Task<string> Login(LoginDto request);
         public Task<string> Verify(VerifyDto request);
         public Task<string> ForgotPassword(ForgotPasswordDto request);
         public Task<string> ResetPassword(ResetPasswordDto request);
-        //public string CreateToken(User user);
         public string CreateCustomToken();
-        Task<TokenViewModel> GetRefreshToken(GetRefreshTokenViewModel model);
         Task<string> GetVerifyLink(GetVerifyLinkDto request);
+        Task<GetDetailsModel> GetUserDetails(string Email);
+        Task<string> ChangeUserDetails(ChangeDetailsDto request);
+        Task<string> ChangeProfileImg(ChangeProfileImgDto request);
+        Task<string> ChangePwd(ChangePwdDto request);
     }
 }

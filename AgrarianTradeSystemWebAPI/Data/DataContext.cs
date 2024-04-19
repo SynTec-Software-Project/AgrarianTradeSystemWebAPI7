@@ -1,4 +1,5 @@
 ﻿using AgrarianTradeSystemWebAPI.Models;
+using AgrarianTradeSystemWebAPI.Models.AdminModels;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ namespace AgrarianTradeSystemWebAPI.Data
 		public DbSet<Orders> Orders { get; set; }
 		public DbSet<Review> Reviews { get; set; }
 		public DbSet<Returns> Returns { get; set; }
+		public DbSet<Admin> Admins { get; set; }
 
 	}
 

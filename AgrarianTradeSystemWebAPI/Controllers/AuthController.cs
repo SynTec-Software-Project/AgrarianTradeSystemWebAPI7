@@ -25,6 +25,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
         }
 
+        // Request for user registration -----------------------------------
         [HttpPost("UserRegister")]
         public async Task<IActionResult> Register([FromForm] UserDto request, IFormFile profilepic)
         {
@@ -45,6 +46,8 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // Request for farmer registration -----------------------------------------
         [HttpPost("FarmerRegister")]
         public async Task<IActionResult> FarmerRegister([FromForm] FarmerDto request, IFormFile profilepic, IFormFile nicfront, IFormFile nicback, IFormFile gncertificate)
         {
@@ -83,6 +86,8 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        // Request for courier registration ---------------------------------------
         [HttpPost("CourierRegister")]
         public async Task<IActionResult> CourierRegister([FromForm] CourierDto request, IFormFile profilepic, IFormFile vehicle, IFormFile license)
         {
@@ -116,6 +121,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for user login ----------------------------------------
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto request)
         {
@@ -130,6 +136,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for getting verification link ----------------------------------------------
         [HttpPost("getVerifyLink")]
         public async Task<IActionResult> VerifyLink(GetVerifyLinkDto request)
         {
@@ -144,6 +151,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for verify the email -----------------------------------------------
         [HttpPost("verify")]
         public async Task<IActionResult> Verify(VerifyDto request)
         {
@@ -158,6 +166,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for getting forget password reset token ----------------------------------
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordDto request)
         {
@@ -172,6 +181,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for change forget password ---------------------------------------
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword(ResetPasswordDto request)
         {
@@ -186,7 +196,8 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
-        [Authorize]
+        // Request for getting user's details ---------------------------------
+        //[Authorize]
         [HttpGet("getUserDetails")]
         public async Task<IActionResult> GetUserDetails(string email)
         {
@@ -201,6 +212,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for changing the user's details -------------------------------------
         [HttpPost("changeUserDetails")]
         public async Task<IActionResult> ChangeUserDetails(ChangeDetailsDto request)
         {
@@ -215,6 +227,29 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
+        // Request for change profile image --------------------------------
+        [HttpPost("changeProfileImg")]
+        public async Task<IActionResult> ChangeProfileImg([FromForm] ChangeProfileImgDto request, IFormFile profilepic)
+        {
+            if (profilepic == null || profilepic.Length == 0)
+            {
+                return BadRequest("No profile pic uploaded.");
+            }
+            try
+            {
+                var newProfileUrl = await _fileServices.Upload(profilepic, AzureContainerProfileImg);
+                request.ProfileImg = newProfileUrl;
+                var result = await _userServices.ChangeProfileImg(request);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+        // Request for change current password -------------------------------------
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword(ChangePwdDto request)
         {
