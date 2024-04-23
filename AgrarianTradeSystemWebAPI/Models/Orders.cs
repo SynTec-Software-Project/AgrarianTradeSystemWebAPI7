@@ -28,5 +28,7 @@ namespace AgrarianTradeSystemWebAPI.Models
 		[JsonIgnore]
 		public Courier? Courier { get; set; }
 
-	}
+        public DateTime OrderedDateOnly => OrderedDate.Date;
+
+    }
 }

@@ -20,5 +20,7 @@
         public string CustomerAddL2 { get; set; } = string.Empty;
         public string CustomerAddL3 { get; set; } = string.Empty;
         public string CustomerPhoneNumber { get; set; } = string.Empty;
+
+        public DateTime OrderedDateOnly => OrderedDate.Date;
     }
 }

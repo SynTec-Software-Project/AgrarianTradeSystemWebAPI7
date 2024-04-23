@@ -27,6 +27,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return NotFound("No orders found for the user");
 
             var orderDtos = new List<CourierOrderDto>();
+
             foreach (var order in orders)
             {
                 var orderDto = new CourierOrderDto
@@ -112,26 +113,29 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 var orderDto = new FarmerOrderDto
                 {
                     OrderID = order.OrderID,
-                    ProductTitle = order.Product.ProductTitle,
-                    ProductImageUrl = order.Product.ProductImageUrl,
+                    ProductTitle = order.Product?.ProductTitle,
+                    ProductImageUrl = order.Product?.ProductImageUrl,
                     OrderedDate = order.OrderedDate,
                     TotalPrice = order.TotalPrice,
                     OrderStatus = order.OrderStatus,
-                    CourierFName = order.Courier.FirstName,
-                    CourierLName = order.Courier.LastName,
-                    CourierAddL1 = order.Courier.AddL1,
-                    CourierAddL2 = order.Courier.AddL2,
-                    CourierAddL3 = order.Courier.AddL3,
-                    CourierPhoneNumber = order.Courier.PhoneNumber,
-                    CustomerFName = order.Buyer.FirstName,
-                    CustomerLName = order.Buyer.LastName,
-                    CustomerAddL1 = order.Buyer.AddL1,
-                    CustomerAddL2 = order.Buyer.AddL2,
-                    CustomerAddL3 = order.Buyer.AddL3,
-                    CustomerPhoneNumber = order.Buyer.PhoneNumber
+                    CourierFName = order.Courier?.FirstName,
+                    CourierLName = order.Courier?.LastName,
+                    CourierAddL1 = order.Courier?.AddL1,
+                    CourierAddL2 = order.Courier?.AddL2,
+                    CourierAddL3 = order.Courier?.AddL3,
+                    CourierPhoneNumber = order.Courier?.PhoneNumber,
+                    CustomerFName = order.Buyer?.FirstName,
+                    CustomerLName = order.Buyer?.LastName,
+                    CustomerAddL1 = order.Buyer?.AddL1,
+                    CustomerAddL2 = order.Buyer?.AddL2,
+                    CustomerAddL3 = order.Buyer?.AddL3,
+                    CustomerPhoneNumber = order.Buyer?.PhoneNumber
                 };
 
-                orderDtos.Add(orderDto);
+                if (orderDto != null)
+                {
+                    orderDtos.Add(orderDto);
+                }
             }
             return Ok(orderDtos);
         }
@@ -151,5 +155,74 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest("Failed to update order status: " + ex.Message);
             }
         }
+
+        // Get details of a single order for a farmer by orderId
+        [HttpGet("farmer/order/{orderId}")]
+        public async Task<ActionResult<FarmerOrderDto>> GetFarmerOrder(int orderId)
+        {
+            var order = await _orderServices.GetFarmerOrder(orderId);
+            if (order == null)
+                return NotFound("Order not found");
+
+            var orderDto = new FarmerOrderDto
+            {
+                OrderID = order.OrderID,
+                ProductTitle = order.Product?.ProductTitle,
+                ProductImageUrl = order.Product?.ProductImageUrl,
+                OrderedDate = order.OrderedDate,
+                TotalPrice = order.TotalPrice,
+                OrderStatus = order.OrderStatus,
+                CourierFName = order.Courier?.FirstName,
+                CourierLName = order.Courier?.LastName,
+                CourierAddL1 = order.Courier?.AddL1,
+                CourierAddL2 = order.Courier?.AddL2,
+                CourierAddL3 = order.Courier?.AddL3,
+                CourierPhoneNumber = order.Courier?.PhoneNumber,
+                CustomerFName = order.Buyer?.FirstName,
+                CustomerLName = order.Buyer?.LastName,
+                CustomerAddL1 = order.Buyer?.AddL1,
+                CustomerAddL2 = order.Buyer?.AddL2,
+                CustomerAddL3 = order.Buyer?.AddL3,
+                CustomerPhoneNumber = order.Buyer?.PhoneNumber
+            };
+
+            return Ok(orderDto);
+        }
+
+        // Get details of a single order for a courier
+        [HttpGet("courier/{userId}/order/{orderId}")]
+        public async Task<ActionResult<CourierOrderDto>> GetCourierOrder(string userId, int orderId)
+        {
+            var order = await _orderServices.GetCourierOrder(userId, orderId);
+            if (order == null)
+                return NotFound("Order not found for the user");
+
+            var orderDto = new CourierOrderDto
+            {
+                OrderID = order.OrderID,
+                ProductTitle = order.Product.ProductTitle,
+                ProductImageUrl = order.Product.ProductImageUrl,
+                DeliveryDate = order.DeliveryDate,
+                PickupDate = order.PickupDate,
+                DeliveryFee = order.DeliveryFee,
+                OrderStatus = order.OrderStatus,
+                CustomerFName = order.Buyer?.FirstName,
+                CustomerLName = order.Buyer?.LastName,
+                CustomerAddL1 = order.Buyer?.AddL1,
+                CustomerAddL2 = order.Buyer?.AddL2,
+                CustomerAddL3 = order.Buyer?.AddL3,
+                CustomerPhoneNumber = order.Buyer?.PhoneNumber,
+                FarmerFName = order.Product.Farmer?.FirstName,
+                FarmerLName = order.Product.Farmer?.LastName,
+                FarmerAddL1 = order.Product.Farmer?.AddL1,
+                FarmerAddL2 = order.Product.Farmer?.AddL2,
+                FarmerAddL3 = order.Product.Farmer?.AddL3,
+                FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber
+            };
+
+            return Ok(orderDto);
+        }
+
+
     }
 }

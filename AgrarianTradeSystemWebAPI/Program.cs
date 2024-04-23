@@ -23,6 +23,16 @@ builder.Services.AddSwaggerGen();
 //auto mapper service setup
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 
 
 //add connection azure blob
@@ -101,6 +111,8 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 
