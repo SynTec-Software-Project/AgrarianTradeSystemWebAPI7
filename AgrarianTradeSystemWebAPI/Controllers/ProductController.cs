@@ -131,6 +131,33 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
+		//update product
+		[HttpPut("update-image/{id}")]
+		public async Task<ActionResult<List<Product>>> UpdateProductImage(int id, IFormFile file)
+		{
+			// upload new file to the azure storage and get link
+			var newFileUrl = await _fileServices.Upload(file, AzureContainerName);
+			var result = await _productServices.UpdateProductImage(id, newFileUrl);
+			if (result is null)
+				return NotFound("product is not found");
+
+			return Ok(result);
+		}
+
+		//update product without product image
+		[HttpPut("update/{id}")]
+		public async Task<ActionResult<List<Product>>> UpdateProductDetails(int id, [FromForm] ProductDto productDto)
+		{
+
+			// Map the DTO to the Product entity
+			var request = _mapper.Map<Product>(productDto);
+
+			var result = await _productServices.UpdateProductDetails(id, request);
+			if (result is null)
+				return NotFound("product is not found");
+			return Ok(result);
+		}
+
 		//delete products
 		[HttpDelete("{id}")]
 		public async Task<ActionResult<List<Product>>> DeleteProduct(int id)
