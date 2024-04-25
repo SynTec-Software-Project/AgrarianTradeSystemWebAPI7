@@ -164,7 +164,42 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			await _context.SaveChangesAsync();
 			return await _context.Products.ToListAsync();
 		}
+		//update product image
+		//update
 
+		public async Task<List<Product>?> UpdateProductImage(int id, String newFileUrl)
+		{
+			//find data from db
+			var product = await _context.Products.FindAsync(id);
+			if (product == null)
+				return null;
+			//get product image url Name
+			var fileName = product.ProductImageUrl;
+			//delete image from azure storage
+			await _fileServices.Delete(fileName, AzureContainerName);
+			//update database
+			product.ProductImageUrl = newFileUrl;
+			await _context.SaveChangesAsync();
+			return await _context.Products.ToListAsync();
+		}
+		//update without image
+		public async Task<List<Product>?> UpdateProductDetails(int id, [FromForm] Product request)
+		{
+			//find data from db
+			var product = await _context.Products.FindAsync(id);
+			if (product == null)
+				return null;
+			//update database
+			product.ProductTitle = request.ProductTitle;
+			product.ProductDescription = request.ProductDescription;
+			product.UnitPrice = request.UnitPrice;
+			product.ProductType = request.ProductType;
+			product.Category = request.Category;
+			product.AvailableStock = request.AvailableStock;
+			product.MinimumQuantity = request.MinimumQuantity;
+			await _context.SaveChangesAsync();
+			return await _context.Products.ToListAsync();
+		}
 		//delete
 		public async Task<List<Product>?> DeleteProduct(int id)
 		{
