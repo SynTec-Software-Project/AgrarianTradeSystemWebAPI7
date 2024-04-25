@@ -141,7 +141,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			if (result is null)
 				return NotFound("product is not found");
 
-			return Ok(result);
+			return Ok("file uploaded");
 		}
 
 		//update product without product image
