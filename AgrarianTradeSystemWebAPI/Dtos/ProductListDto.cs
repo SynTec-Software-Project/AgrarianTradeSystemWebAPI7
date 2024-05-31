@@ -7,7 +7,7 @@
 		public  string? FarmerFName { get; set; }
 		public string? FarmerLName { get; set; }
 		public string? FarmerProfileUrl { get; set; }
-		public string ProductImageUrl { get; set; } = string.Empty;
+		public string? ProductImageUrl { get; set; } = string.Empty;
 		public string? FarmerAddL1 { get; set; }
 		public string? FarmerAddL2 { get; set; }
 

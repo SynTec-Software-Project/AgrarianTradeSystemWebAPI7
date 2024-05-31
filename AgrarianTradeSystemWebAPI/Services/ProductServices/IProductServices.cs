@@ -17,5 +17,6 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		Task<List<ProductCardDto>> GetAllProductsSortedByPrice(bool ascending = true);
 		Task<List<Product>?> UpdateProductDetails(int id, [FromForm] Product request);
 		Task<List<Product>?> UpdateProductImage(int id, String newFileUrl);
+		Task<List<Product>> GetAllProductsByFarmer(string farmerId);
 	}
 }

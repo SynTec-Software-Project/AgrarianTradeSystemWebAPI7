@@ -28,7 +28,14 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			return product;
 		}
 
-        //get sorted product list
+		public async Task<List<Product>> GetAllProductsByFarmer(string farmerId)
+		{
+			var products = await _context.Products.Where(p => p.FarmerID == farmerId).ToListAsync(); 
+			return products;
+		}
+
+
+		//get sorted product list
 		public async Task<List<Product>> GetAllProductsSortedByPriceAsync(bool ascending = true)
 		{
 			if (ascending)
@@ -68,7 +75,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		public async Task<List<ProductCardDto>> GetAllProductsWithFarmerDetails()
 		{
 			var products = await _context.Products
-				.Include(p => p.Farmer) 
+				.Include(p => p.Farmer)
 				.ToListAsync();
 
 			var productCardDtos = products.Select(p => new ProductCardDto
@@ -90,7 +97,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		//get single data by id
 		public async Task<Product?> GetSingleProduct(int id)
 		{
-			var product = await _context.Products.FindAsync(id); 
+			var product = await _context.Products.FindAsync(id);
 			if (product == null)
 				return null;
 			return product;
@@ -112,7 +119,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			{
 				ProductId = product.ProductID,
 				ProductTitle = product.ProductTitle,
-				ProductImageUrl=product.ProductImageUrl,
+				ProductImageUrl = product.ProductImageUrl,
 				FarmerFName = product.Farmer?.FirstName ?? "",
 				FarmerLName = product.Farmer?.LastName ?? "",
 				FarmerProfileUrl = product.Farmer?.ProfileImg ?? "",

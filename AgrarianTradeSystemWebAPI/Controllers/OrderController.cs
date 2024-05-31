@@ -32,26 +32,26 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 var orderDto = new CourierOrderDto
                 {
                     OrderID = order.OrderID,
-                    ProductTitle = order.Product.ProductTitle,
-                    ProductImageUrl = order.Product.ProductImageUrl,
+                    ProductTitle = order.Product?.ProductTitle,
+                    ProductImageUrl = order.Product?.ProductImageUrl,
                     DeliveryDate = order.DeliveryDate,
                     PickupDate = order.PickupDate,
                     OrderedDate = order.OrderedDate,
                     TotalQuantity = order.TotalQuantity,
                     DeliveryFee = order.DeliveryFee,
                     OrderStatus = order.OrderStatus,
-                    CustomerFName = order.Buyer.FirstName,
-                    CustomerLName = order.Buyer.LastName,
-                    CustomerAddL1 = order.Buyer.AddL1,
-                    CustomerAddL2 = order.Buyer.AddL2,
-                    CustomerAddL3 = order.Buyer.AddL3,
-                    CustomerPhoneNumber = order.Buyer.PhoneNumber,
-                    FarmerFName = order.Product.Farmer.FirstName,
-                    FarmerLName = order.Product.Farmer.LastName,
-                    FarmerAddL1 = order.Product.Farmer.AddL1,
-                    FarmerAddL2 = order.Product.Farmer.AddL2,
-                    FarmerAddL3 = order.Product.Farmer.AddL3,
-                    FarmerPhoneNumber = order.Product.Farmer.PhoneNumber
+                    CustomerFName = order.Buyer?.FirstName,
+                    CustomerLName = order.Buyer?.LastName,
+                    CustomerAddL1 = order.Buyer?.AddL1,
+                    CustomerAddL2 = order.Buyer?.AddL2,
+                    CustomerAddL3 = order.Buyer?.AddL3,
+                    CustomerPhoneNumber = order.Buyer?.PhoneNumber,
+                    FarmerFName = order.Product?.Farmer?.FirstName,
+                    FarmerLName = order.Product?.Farmer?.LastName,
+                    FarmerAddL1 = order.Product?.Farmer?.AddL1,
+                    FarmerAddL2 = order.Product?.Farmer?.AddL2,
+                    FarmerAddL3 = order.Product?.Farmer?.AddL3,
+                    FarmerPhoneNumber = order.Product?.Farmer?.PhoneNumber
                 };
 
                 orderDtos.Add(orderDto);
@@ -81,18 +81,18 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                     DeliveryFee = order.DeliveryFee,
                     OrderStatus = order.OrderStatus,
                     TotalPrice = order.TotalPrice,
-                    FarmerFName = order.Product.Farmer.FirstName,
-                    FarmerLName = order.Product.Farmer.LastName,
-                    FarmerAddL1 = order.Product.Farmer.AddL1,
-                    FarmerAddL2 = order.Product.Farmer.AddL2,
-                    FarmerAddL3 = order.Product.Farmer.AddL3,
-                    FarmerPhoneNumber = order.Product.Farmer.PhoneNumber,
-                    CourierFName = order.Courier.FirstName,
-                    CourierLName = order.Courier.LastName,
-                    CourierAddL1 = order.Courier.AddL1,
-                    CourierAddL2 = order.Courier.AddL2,
-                    CourierAddL3 = order.Courier.AddL3,
-                    CourierPhoneNumber = order.Courier.PhoneNumber
+                    FarmerFName = order.Product.Farmer?.FirstName,
+                    FarmerLName = order.Product.Farmer?.LastName,
+                    FarmerAddL1 = order.Product.Farmer?.AddL1,
+                    FarmerAddL2 = order.Product.Farmer?.AddL2,
+                    FarmerAddL3 = order.Product.Farmer?.AddL3,
+                    FarmerPhoneNumber = order.Product?.Farmer?.PhoneNumber,
+                    CourierFName = order.Courier?.FirstName,
+                    CourierLName = order.Courier?.LastName,
+                    CourierAddL1 = order.Courier?.AddL1,
+                    CourierAddL2 = order.Courier?.AddL2,
+                    CourierAddL3 = order.Courier?.AddL3,
+                    CourierPhoneNumber = order.Courier?.PhoneNumber
                 };
 
                 orderDtos.Add(orderDto);
@@ -120,18 +120,18 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                     TotalPrice = order.TotalPrice,
                     TotalQuantity = order.TotalQuantity,
                     OrderStatus = order.OrderStatus,
-                    CourierFName = order.Courier.FirstName,
-                    CourierLName = order.Courier.LastName,
-                    CourierAddL1 = order.Courier.AddL1,
-                    CourierAddL2 = order.Courier.AddL2,
-                    CourierAddL3 = order.Courier.AddL3,
-                    CourierPhoneNumber = order.Courier.PhoneNumber,
-                    CustomerFName = order.Buyer.FirstName,
-                    CustomerLName = order.Buyer.LastName,
-                    CustomerAddL1 = order.Buyer.AddL1,
-                    CustomerAddL2 = order.Buyer.AddL2,
-                    CustomerAddL3 = order.Buyer.AddL3,
-                    CustomerPhoneNumber = order.Buyer.PhoneNumber
+                    CourierFName = order.Courier?.FirstName,
+                    CourierLName = order.Courier?.LastName,
+                    CourierAddL1 = order.Courier?.AddL1,
+                    CourierAddL2 = order.Courier?.AddL2,
+                    CourierAddL3 = order.Courier?.AddL3,
+                    CourierPhoneNumber = order.Courier?.PhoneNumber,
+                    CustomerFName = order.Buyer?.FirstName,
+                    CustomerLName = order.Buyer?.LastName,
+                    CustomerAddL1 = order.Buyer?.AddL1,
+                    CustomerAddL2 = order.Buyer?.AddL2,
+                    CustomerAddL3 = order.Buyer?.AddL3,
+                    CustomerPhoneNumber = order.Buyer?.PhoneNumber
                 };
 
                 orderDtos.Add(orderDto);

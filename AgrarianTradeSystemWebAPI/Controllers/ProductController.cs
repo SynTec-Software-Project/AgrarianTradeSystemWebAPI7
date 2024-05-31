@@ -22,12 +22,25 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			_mapper = mapper;
 			_fileServices = fileServices;
 		}
+		
 		//get all products
 		[HttpGet]
 		public async Task<ActionResult<List<Product>>> GetAllProduct()
 		{
 
 			return await _productServices.GetAllProduct();
+		}
+		
+		//get product list by farmer ID
+		[HttpGet("farmer/{farmerId}")]
+		public async Task<ActionResult<List<Product>>> GetAllProduct(string farmerId)
+		{
+			var products = await _productServices.GetAllProductsByFarmer(farmerId);
+			if (products == null || !products.Any())
+			{
+				return NotFound();
+			}
+			return products;
 		}
 
 		//get sorted products
@@ -42,6 +55,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			var products = await _productServices.GetAllProductsSortedByPriceAsync(sortOrder.ToLower() == "asc");
 			return Ok(products);
 		}
+
 		//get all sorted list
 		[HttpGet("sorted-products")]
 		public async Task<ActionResult<List<ProductCardDto>>> GetProductsSortedByPriceList([FromQuery] string sortOrder = "asc")
