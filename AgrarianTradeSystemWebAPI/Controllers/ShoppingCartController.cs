@@ -24,7 +24,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			try
 			{
 				var cart = await _shoppingCartServices.AddToCart(request.BuyerId, request.ProductId, request.Quantity);
-				return Ok(cart); 
+				return Ok(cart);
 			}
 			catch (InvalidOperationException ex)
 			{
@@ -32,13 +32,15 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, $"An error occurred while adding the product to the cart: {ex.Message}");
+				// Return a custom error message instead of serializing the entire exception object
+				return BadRequest("An error occurred while processing the request.");
 			}
 		}
 
 
+
 		[HttpGet("items")]
-		public IActionResult GetCartItems(int customerId)
+		public IActionResult GetCartItems(string customerId)
 		{
 			try
 			{
@@ -52,7 +54,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 		[HttpDelete("delete-cart-item")]
-		public IActionResult DeleteCartItem(int buyerId, int cartItemId)
+		public IActionResult DeleteCartItem(string buyerId, int cartItemId)
 		{
 			try
 			{

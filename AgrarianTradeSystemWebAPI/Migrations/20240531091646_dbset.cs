@@ -5,7 +5,7 @@
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class datetime : Migration
+    public partial class dbset : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

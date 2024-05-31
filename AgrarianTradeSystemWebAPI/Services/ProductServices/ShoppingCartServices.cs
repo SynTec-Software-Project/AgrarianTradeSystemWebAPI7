@@ -14,10 +14,10 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
             _context = context;     
         }
 
-		public async Task<Cart> AddToCart(int buyerId, int productId, int quantity)
+		public async Task<Cart> AddToCart(string buyerId, int productId, int quantity)
 		{
 			// Check if the buyer exists
-			var buyer = await _context.Buyers.FindAsync(buyerId);
+			var buyer = await _context.Users.FindAsync(buyerId);
 			if (buyer == null)
 			{
 				throw new InvalidOperationException("Buyer not found.");
@@ -72,7 +72,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 
 
 
-		public List<CartItemDto> GetCartItems(int buyerId)
+		public List<CartItemDto> GetCartItems(string buyerId)
 		{
 			var cartItems = _context.CartItems
 				.Where(ci => ci.Cart.BuyerId == buyerId)
@@ -91,7 +91,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 		}
 
 
-		public List<CartItemDto> DeleteCartItem(int buyerId, int cartItemId)
+		public List<CartItemDto> DeleteCartItem(string buyerId, int cartItemId)
 		{
 			// Find the cart item to delete
 			var cartItem = _context.CartItems

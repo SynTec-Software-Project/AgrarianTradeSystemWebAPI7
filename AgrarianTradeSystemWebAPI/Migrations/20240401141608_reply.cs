@@ -5,24 +5,25 @@
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class init1 : Migration
+    public partial class reply : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "ProductImage",
-                table: "Products",
-                newName: "ProductImageUrl");
+            migrationBuilder.AddColumn<string>(
+                name: "Reply",
+                table: "Reviews",
+                type: "nvarchar(max)",
+                nullable: true,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "ProductImageUrl",
-                table: "Products",
-                newName: "ProductImage");
+            migrationBuilder.DropColumn(
+                name: "Reply",
+                table: "Reviews");
         }
     }
 }

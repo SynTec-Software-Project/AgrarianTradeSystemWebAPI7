@@ -30,6 +30,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return await _productServices.GetAllProduct();
 		}
 
+		//get sorted products
 		[HttpGet("sorted")]
 		public async Task<ActionResult<List<Product>>> GetProductsSortedByPrice([FromQuery] string sortOrder = "asc")
 		{
@@ -41,10 +42,30 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			var products = await _productServices.GetAllProductsSortedByPriceAsync(sortOrder.ToLower() == "asc");
 			return Ok(products);
 		}
+		//get all sorted list
+		[HttpGet("sorted-products")]
+		public async Task<ActionResult<List<ProductCardDto>>> GetProductsSortedByPriceList([FromQuery] string sortOrder = "asc")
+		{
+			if (sortOrder.ToLower() != "asc" && sortOrder.ToLower() != "desc")
+			{
+				return BadRequest("Invalid sort order. Use 'asc' or 'desc'.");
+			}
+			var products = await _productServices.GetAllProductsSortedByPrice(sortOrder.ToLower() == "asc");
+
+			return Ok(products);
+		}
+
+		//get all products with farmer's details
+		[HttpGet("all-details")]
+		public async Task<ActionResult<List<ProductCardDto>>> GetAllProductsWithFarmerDetails()
+		{
+			var productListDtos = await _productServices.GetAllProductsWithFarmerDetails();
+			return Ok(productListDtos);
+		}
 
 
 
-		//get data by id
+		//get product details by id
 		[HttpGet("{id}")]
 		public async Task<ActionResult<List<Product>>> GetSingleProduct(int id)
 		{
@@ -54,6 +75,20 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
+
+		//get product and farmer's details by product id
+		[HttpGet("details/{id}")]
+		public async Task<ActionResult<ProductListDto>> GetSingleProductDto(int id)
+		{
+			var productDto = await _productServices.GetSingleProductDto(id);
+
+			if (productDto == null)
+			{
+				return NotFound("Product not found");
+			}
+
+			return Ok(productDto);
+		}
 
 		//post products
 		[HttpPost]
@@ -93,6 +128,33 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			if (result is null)
 				return NotFound("product is not found");
 
+			return Ok(result);
+		}
+
+		//update product
+		[HttpPut("update-image/{id}")]
+		public async Task<ActionResult<List<Product>>> UpdateProductImage(int id, IFormFile file)
+		{
+			// upload new file to the azure storage and get link
+			var newFileUrl = await _fileServices.Upload(file, AzureContainerName);
+			var result = await _productServices.UpdateProductImage(id, newFileUrl);
+			if (result is null)
+				return NotFound("product is not found");
+
+			return Ok("file uploaded");
+		}
+
+		//update product without product image
+		[HttpPut("update/{id}")]
+		public async Task<ActionResult<List<Product>>> UpdateProductDetails(int id, [FromForm] ProductDto productDto)
+		{
+
+			// Map the DTO to the Product entity
+			var request = _mapper.Map<Product>(productDto);
+
+			var result = await _productServices.UpdateProductDetails(id, request);
+			if (result is null)
+				return NotFound("product is not found");
 			return Ok(result);
 		}
 
