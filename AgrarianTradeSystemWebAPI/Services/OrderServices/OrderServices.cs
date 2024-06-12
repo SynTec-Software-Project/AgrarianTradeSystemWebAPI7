@@ -87,22 +87,22 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                 var orderDtos = orders.Select(order => new CourierOrderDto
                 {
                     OrderID = order.OrderID,
-                    ProductTitle = order.Product.ProductTitle,
-                    ProductImageUrl = order.Product.ProductImageUrl,
+                    ProductTitle = order.Product?.ProductTitle,
+                    ProductImageUrl = order.Product?.ProductImageUrl,
                     OrderStatus = order.OrderStatus,
                     TotalQuantity = order.TotalQuantity,
-                    CustomerFName = order.Buyer.FirstName,
-                    CustomerLName = order.Buyer.LastName,
-                    CustomerAddL1 = order.Buyer.AddL1,
-                    CustomerAddL2 = order.Buyer.AddL2,
-                    CustomerAddL3 = order.Buyer.AddL3,
+                    CustomerFName = order.Buyer?.FirstName,
+                    CustomerLName = order.Buyer?.LastName,
+                    CustomerAddL1 = order.Buyer?.AddL1,
+                    CustomerAddL2 = order.Buyer?.AddL2,
+                    CustomerAddL3 = order.Buyer?.AddL3,
                     CustomerPhoneNumber = order.Buyer.PhoneNumber,
-                    FarmerFName = order.Product.Farmer.FirstName,
-                    FarmerLName = order.Product.Farmer.LastName,
-                    FarmerAddL1 = order.Product.Farmer.AddL1,
-                    FarmerAddL2 = order.Product.Farmer.AddL2,
-                    FarmerAddL3 = order.Product.Farmer.AddL3,
-                    FarmerPhoneNumber = order.Product.Farmer.PhoneNumber
+                    FarmerFName = order.Product.Farmer?.FirstName,
+                    FarmerLName = order.Product.Farmer?.LastName,
+                    FarmerAddL1 = order.Product.Farmer?.AddL1,
+                    FarmerAddL2 = order.Product.Farmer?.AddL2,
+                    FarmerAddL3 = order.Product.Farmer?.AddL3,
+                    FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber
                 }).ToList();
 
                 return orderDtos;
@@ -133,18 +133,18 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                     ProductImageUrl = order.Product.ProductImageUrl,
                     OrderStatus = order.OrderStatus,
                     TotalQuantity = order.TotalQuantity,
-                    CourierFName = order.Courier.FirstName,
-                    CourierLName = order.Courier.LastName,
-                    CourierAddL1 = order.Courier.AddL1,
-                    CourierAddL2 = order.Courier.AddL2,
-                    CourierAddL3 = order.Courier.AddL3,
-                    CourierPhoneNumber = order.Courier.PhoneNumber,
-                    CustomerFName = order.Buyer.FirstName,
-                    CustomerLName = order.Buyer.LastName,
-                    CustomerAddL1 = order.Buyer.AddL1,
-                    CustomerAddL2 = order.Buyer.AddL2,
-                    CustomerAddL3 = order.Buyer.AddL3,
-                    CustomerPhoneNumber = order.Buyer.PhoneNumber
+                    CourierFName = order.Courier?.FirstName,
+                    CourierLName = order.Courier?.LastName,
+                    CourierAddL1 = order.Courier?.AddL1,
+                    CourierAddL2 = order.Courier?.AddL2,
+                    CourierAddL3 = order.Courier?.AddL3,
+                    CourierPhoneNumber = order.Courier?.PhoneNumber,
+                    CustomerFName = order.Buyer?.FirstName,
+                    CustomerLName = order.Buyer?.LastName,
+                    CustomerAddL1 = order.Buyer?.AddL1,
+                    CustomerAddL2 = order.Buyer?.AddL2,
+                    CustomerAddL3 = order.Buyer?.AddL3,
+                    CustomerPhoneNumber = order.Buyer?.PhoneNumber
                 }).ToList();
 
                 return orderDtos;
@@ -171,22 +171,22 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                 var orderDtos = orders.Select(order => new BuyerOrderDto
                 {
                     OrderID = order.OrderID,
-                    ProductTitle = order.Product.ProductTitle,
+                    ProductTitle = order.Product?.ProductTitle,
                     ProductImageUrl = order.Product.ProductImageUrl,
                     OrderStatus = order.OrderStatus,
                     TotalQuantity = order.TotalQuantity,
-                    FarmerFName = order.Product.Farmer.FirstName,
-                    FarmerLName = order.Product.Farmer.LastName,
-                    FarmerAddL1 = order.Product.Farmer.AddL1,
-                    FarmerAddL2 = order.Product.Farmer.AddL2,
-                    FarmerAddL3 = order.Product.Farmer.AddL3,
-                    FarmerPhoneNumber = order.Product.Farmer.PhoneNumber,
-                    CourierFName = order.Courier.FirstName,
-                    CourierLName = order.Courier.LastName,
-                    CourierAddL1 = order.Courier.AddL1,
-                    CourierAddL2 = order.Courier.AddL2,
-                    CourierAddL3 = order.Courier.AddL3,
-                    CourierPhoneNumber = order.Courier.PhoneNumber
+                    FarmerFName = order.Product.Farmer?.FirstName,
+                    FarmerLName = order.Product.Farmer?.LastName,
+                    FarmerAddL1 = order.Product.Farmer?.AddL1,
+                    FarmerAddL2 = order.Product.Farmer?.AddL2,
+                    FarmerAddL3 = order.Product.Farmer?.AddL3,
+                    FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber,
+                    CourierFName = order.Courier?.FirstName,
+                    CourierLName = order.Courier?.LastName,
+                    CourierAddL1 = order.Courier?.AddL1,
+                    CourierAddL2 = order.Courier?.AddL2,
+                    CourierAddL3 = order.Courier?.AddL3,
+                    CourierPhoneNumber = order.Courier?.PhoneNumber
                 }).ToList();
 
                 return orderDtos;
