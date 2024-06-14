@@ -1,9 +1,12 @@
 ﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Hubs;
 using AgrarianTradeSystemWebAPI.Models;
 using AgrarianTradeSystemWebAPI.Services.OrderServices;
 using MailKit.Search;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
@@ -12,10 +15,12 @@ namespace AgrarianTradeSystemWebAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderServices _orderServices;
+        private readonly IHubContext<NotificationHub> _hubContext;
 
-        public OrderController(IOrderServices orderServices)
+        public OrderController(IOrderServices orderServices, IHubContext<NotificationHub> hubContext)
         {
             _orderServices = orderServices;
+            _hubContext = hubContext;
         }
 
         //get data by id
@@ -139,6 +144,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             return Ok(orderDtos);
         }
 
+        /*
         [HttpPut("{orderId}")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, string orderStatus)
         {
@@ -152,6 +158,46 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest("Failed to update order status: " + ex.Message);
             }
         }
+        */
+        [HttpPut("{orderId}")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, string orderStatus)
+        {
+            try
+            {
+                var isUpdated = await _orderServices.UpdateOrderStatus(orderId, orderStatus);
+                if (isUpdated)
+                {
+                    return Ok("Order status updated successfully");
+                }
+                else
+                {
+                    return BadRequest("Order update confirmation failed");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to update order status: " + ex.Message);
+            }
+        }
+
+        // Endpoint for confirming order status update
+        [HttpPost("confirm-update")]
+        public async Task<IActionResult> ConfirmUpdate(ConfirmUpdateDto confirmUpdateDto)
+        {
+            try
+            {
+                // Assuming ConfirmUpdateDto contains orderId and newStatus fields
+                await _orderServices.ConfirmOrderStatus(confirmUpdateDto.OrderID, confirmUpdateDto.NewStatus);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Failed to confirm order status update: " + ex.Message);
+            }
+        }
+
+
+
 
         // Get courier's order details by orderId
         [HttpGet("courier/details/{orderId}")]

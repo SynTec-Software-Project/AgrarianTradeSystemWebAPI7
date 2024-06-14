@@ -4,6 +4,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240612095509_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,54 +72,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Notification", b =>
-                {
-                    b.Property<int>("NotificationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("NotificationId"));
-
-                    b.Property<string>("BuyerEmail")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CourierEmail")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FromCourierID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("OrdersOrderID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ProductID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ReceivedTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("SendTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ToUserID")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("NotificationId");
-
-                    b.HasIndex("BuyerEmail");
-
-                    b.HasIndex("CourierEmail");
-
-                    b.HasIndex("OrdersOrderID");
-
-                    b.HasIndex("ProductID");
-
-                    b.ToTable("Notification");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Orders", b =>
@@ -582,33 +537,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Cart");
-
-                    b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Notification", b =>
-                {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.User", "Buyer")
-                        .WithMany()
-                        .HasForeignKey("BuyerEmail");
-
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.UserModels.Courier", "Courier")
-                        .WithMany()
-                        .HasForeignKey("CourierEmail");
-
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
-                        .WithMany()
-                        .HasForeignKey("OrdersOrderID");
-
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductID");
-
-                    b.Navigation("Buyer");
-
-                    b.Navigation("Courier");
-
-                    b.Navigation("Orders");
 
                     b.Navigation("Product");
                 });
