@@ -9,9 +9,11 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
         Task<List<Orders>> GetCourierOrders(string userId);
         Task<List<Orders>> GetBuyerOrders(string userId);
         Task<List<Orders>> GetFarmerOrders(string farmerId);
-        Task UpdateOrderStatus(int orderId, string newStatus);
+        //Task UpdateOrderStatus(int orderId, string newStatus);
         Task<List<CourierOrderDto>> GetCourierOrderDetails(int orderId);
         Task<List<FarmerOrderDto>> GetFarmerOrderDetails(int orderId);
         Task<List<BuyerOrderDto>> GetBuyerOrderDetails(int orderId);
+        Task<bool> UpdateOrderStatus(int orderId, string newStatus);
+        Task ConfirmOrderStatus(int orderID, string newStatus);
     };
 }

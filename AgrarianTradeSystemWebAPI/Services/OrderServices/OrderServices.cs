@@ -4,16 +4,23 @@ using AgrarianTradeSystemWebAPI.Models;
 using AgrarianTradeSystemWebAPI.Models.UserModels;
 using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.SignalR;
+using AgrarianTradeSystemWebAPI.Hubs;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace AgrarianTradeSystemWebAPI.Services.OrderServices
 {
     public class OrderServices : IOrderServices
     {
         private readonly DataContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext;
+        private static ConcurrentDictionary<int, TaskCompletionSource<bool>> _confirmationTasks = new ConcurrentDictionary<int, TaskCompletionSource<bool>>();
 
-        public OrderServices(DataContext context)
+        public OrderServices(DataContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
 
@@ -54,6 +61,7 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
             return orders;
         }
 
+        /*
         //update order status
         public async Task UpdateOrderStatus(int orderId, string newStatus)
         {
@@ -69,6 +77,59 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
             {
                 throw new ArgumentException("Order not found.");
             }
+        }
+        */
+
+        // Update order status
+        public async Task<bool> UpdateOrderStatus(int orderId, string newStatus)
+        {
+            var order = await _context.Orders.FirstOrDefaultAsync(o => o.OrderID == orderId);
+            if (order != null)
+            {
+                string? userId = (order.OrderStatus?.ToLower() == "ready to pickup") ? order.Product?.FarmerID : order.BuyerID;
+                string role = (order.OrderStatus.ToLower() == "ready to pickup") ? "farmer" : "buyer";
+
+                if (_hubContext.Clients != null && _hubContext.Clients.User(userId) != null)
+                {
+                    await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", new
+                    {
+                        OrderId = orderId,
+                        NewStatus = newStatus,
+                        Role = role
+                    });
+                }
+
+                // Wait for confirmation
+                bool isConfirmed = await WaitForConfirmation(orderId);
+
+                if (isConfirmed)
+                {
+                    order.OrderStatus = newStatus; // Update the status
+                    await _context.SaveChangesAsync(); // Save changes to the database
+                    return true;
+                }
+                return false;
+            }
+            else
+            {
+                throw new ArgumentException("Order not found.");
+            }
+        }
+
+        private async Task<bool> WaitForConfirmation(int orderId)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+            _confirmationTasks[orderId] = tcs;
+            // Here you can set a timeout if needed
+            return await tcs.Task;
+        }
+
+
+        // Method to handle confirmation
+        public async Task ConfirmOrderStatus(int orderId, string newStatus)
+        {
+            // Assuming you have logic to confirm the order status update
+            await _hubContext.Clients.All.SendAsync("OrderStatusConfirmed", orderId, newStatus);
         }
 
         //get courier's order details
@@ -197,6 +258,7 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                 throw new Exception("Failed to get buyer order details.", ex);
             }
         }
+
     }
 }
 

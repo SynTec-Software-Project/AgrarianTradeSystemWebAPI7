@@ -25,7 +25,7 @@ namespace AgrarianTradeSystemWebAPI.Data
 		public DbSet<Orders> Orders { get; set; }
 		public DbSet<Review> Reviews { get; set; }
 		public DbSet<Returns> Returns { get; set; }
-
+        public DbSet<Notification> Notification { get; set; }
+    
 	}
-
 }
