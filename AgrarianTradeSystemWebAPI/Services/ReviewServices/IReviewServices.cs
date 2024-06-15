@@ -17,12 +17,12 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 
         Task<List<Review>?> DeleteReview(int id);
    
-        Task<List<ReviewOrdersDto>> GetOrdersToReview();
-
         Task<Review> AddReviewReply(int id, string reply);
 
-        Task<List<Review>> GetReviewsByProductID(int productId);
-        List<ReviewDto> GetAllReviewDetails();
-	}
+        Task<List<ProductReviewDto>> GetReviewsByProductID(int productId);
+        Task<List<ReviewHistoryDto>> GetAllReviewHistory(string buyerId);
+        Task<List<ReviewOrdersDto>> GetOrdersToReview(string buyerId);
+
+    }
 
 }

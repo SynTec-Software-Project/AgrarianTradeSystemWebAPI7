@@ -1,9 +1,13 @@
-﻿using AgrarianTradeSystemWebAPI.Models;
+﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
 
 namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 {
 	public interface IReturnServices
 	{
-		Task<Returns> CreateReturn(Returns returnData);
-	}
+		Task<List<Returns>> GetAllReturns();
+		Task<Returns> AddReturn(Returns returnData);
+		Task<List<ReturnOrderDto>> GetOrdersToReturn();
+		Task<ReturnDto> GetDetailsByOrderId(int orderId);
+    }
 }

@@ -182,6 +182,26 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(result);
 		}
 
-	}
+		//search products
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Product>>> SearchProducts([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return BadRequest("Search term cannot be empty");
+            }
+
+            try
+            {
+                var products = await _productServices.SearchAsync(searchTerm);
+                return Ok(products);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+    }
 }
 

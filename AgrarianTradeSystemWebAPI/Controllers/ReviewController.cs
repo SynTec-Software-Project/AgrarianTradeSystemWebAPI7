@@ -72,7 +72,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		}
 
-		[HttpPut("{id}")]
+		[HttpPut("edit-review/{id}")]
 		public async Task<ActionResult<List<Review>>> UpdateReview(int id, Review request)
 		{
 
@@ -95,14 +95,25 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 
-		[HttpGet("to-review")]
-		public async Task<IActionResult> GetOrdersWithStatusReview()
-		{
-			var orders = await _reviewServices.GetOrdersToReview();
-			return Ok(orders);
-		}
+        [HttpGet("to-review")]
+        public async Task<IActionResult> GetOrdersWithStatusReview([FromQuery] string buyerId)
+        {
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                return BadRequest("BuyerID is required.");
+            }
 
-		[HttpPut("{id}/add-reply")]
+            var orders = await _reviewServices.GetOrdersToReview(buyerId);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No orders found for the given BuyerID.");
+            }
+
+            return Ok(orders);
+        }
+
+
+        [HttpPut("add-reply/{id}")]
 		public async Task<IActionResult> UpdateReviewReply(int id, [FromBody] string reply)
 		{
 			var updatedReview = await _reviewServices.AddReviewReply(id, reply);
@@ -115,20 +126,23 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(updatedReview);
 		}
 
-		[HttpGet("product/{productId}")]
+		[HttpGet("product-reviews/{productId}")]
 		public async Task<IActionResult> GetReviewsByProductID(int productId)
 		{
 			var reviews = await _reviewServices.GetReviewsByProductID(productId);
 			return Ok(reviews);
 		}
 
-		[HttpGet("get-history")]
-		public IActionResult GetAllReviewDetails()
-		{
-			var reviewDetails = _reviewServices.GetAllReviewDetails();
-			return Ok(reviewDetails);
-		}
-	}
+
+        [HttpGet("review-history/{buyerId}")]
+        public async Task<IActionResult> GetReviewHistory(string buyerId)
+        {
+            var reviews = await _reviewServices.GetAllReviewHistory(buyerId);
+            return Ok(reviews);
+        }
+
+
+    }
 
 
 }

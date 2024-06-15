@@ -75,25 +75,26 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 			await _context.SaveChangesAsync();
 			return await _context.Reviews.ToListAsync();
 		}
-		//get orders to review
-		public async Task<List<ReviewOrdersDto>> GetOrdersToReview()
-		{
-			var reviewOrders = await _context.Orders
-				.Where(o => o.OrderStatus == "review")
-				.Select(o => new ReviewOrdersDto
-				{
-					OrderID = o.OrderID,
-					ProductID = o.ProductID,
-					ProductName = o.Product.ProductTitle,
-					ProductDescription = o.Product.ProductDescription,
-					ProductImageUrl = o.Product.ProductImageUrl
-				})
-				.ToListAsync();
+        //get orders to return
+        public async Task<List<ReviewOrdersDto>> GetOrdersToReview(string buyerId)
+        {
+            var reviewOrders = await _context.Orders
+                .Where(o => o.OrderStatus == "review" && o.BuyerID == buyerId)
+                .Select(o => new ReviewOrdersDto
+                {
+                    OrderID = o.OrderID,
+                    ProductID = o.ProductID,
+                    ProductName = o.Product.ProductTitle,
+                    ProductDescription = o.Product.ProductDescription,
+                    ProductImageUrl = o.Product.ProductImageUrl
+                })
+                .ToListAsync();
 
-			return reviewOrders;
-		}
+            return reviewOrders;
+        }
 
-		public async Task<Review> AddReviewReply(int id, string reply)
+
+        public async Task<Review> AddReviewReply(int id, string reply)
 		{
 			var review = await _context.Reviews.FindAsync(id);
 
@@ -108,36 +109,69 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 			return review;
 		}
 
-		public async Task<List<Review>> GetReviewsByProductID(int productId)
-		{
-			return await _context.Reviews
-				.Where(r => r.Orders != null && r.Orders.ProductID == productId)
-				.ToListAsync();
-		}
-		//get history
-		public List<ReviewDto> GetAllReviewDetails()
-		{
-			var reviews = _context.Reviews
-								  .Include(r => r.Orders)
-								  .ToList();
+        public async Task<List<ProductReviewDto>> GetReviewsByProductID(int productId)
+        {
+            // Step 1: Retrieve OrderIDs for the given ProductID
+            var orderIds = await _context.Orders
+                .Where(o => o.ProductID == productId)
+                .Select(o => o.OrderID)
+                .ToListAsync();
 
-			var reviewDtos = reviews.Select(review => new ReviewDto
-			{
-				ReviewId = review.ReviewId,
-				OrderID = review.OrderID,
-				ProductTitle = review.Orders?.Product?.ProductTitle ?? string.Empty,
-				ProductDescription = review.Orders?.Product?.ProductDescription,
-				ProductImageUrl = review.Orders?.Product?.ProductImageUrl ?? string.Empty,
-				Comment = review.Comment,
-				ReviewImageUrl = review.ReviewImageUrl,
-				ReviewDate = review.ReviewDate,
-				SellerRating = review.SellerRating,
-				DeliverRating = review.DeliverRating,
-				ProductRating = review.ProductRating
-			}).ToList(); // Convert to List<ReviewDto>
+            // Step 2: Fetch Reviews using the OrderIDs
+            var reviews = await _context.Reviews
+                .Where(r => orderIds.Contains(r.OrderID))
+                .Include(r => r.Orders) // Include Orders for mapping
+                .ThenInclude(o => o.Buyer) // Include Buyer for mapping
+                .ToListAsync();
 
-			return reviewDtos;
-		}
-	}
+            // Step 3: Map Reviews to ProductReviewDto
+            var productReviewDtos = reviews.Select(r => new ProductReviewDto
+            {
+                ReviewId = r.ReviewId,
+                OrderID = r.OrderID,
+                BuyerFirstName = r.Orders?.Buyer?.FirstName ?? "Unknown",
+                BuyerLastName = r.Orders?.Buyer?.LastName ?? "Unknown",
+                Comment = r.Comment,
+                ReviewImageUrl = r.ReviewImageUrl,
+                ReviewDate = r.ReviewDate,
+                SellerRating = r.SellerRating,
+                DeliverRating = r.DeliverRating,
+                ProductRating = r.ProductRating,
+                Reply = r.Reply
+            }).ToList();
+
+            // Step 4: Return the list of ProductReviewDto
+            return productReviewDtos;
+        }
+
+
+
+        public async Task<List<ReviewHistoryDto>> GetAllReviewHistory(string buyerId)
+        {
+            var reviewDetails = await _context.Reviews
+                .Include(r => r.Orders)
+                .ThenInclude(o => o.Product)
+                .Where(r => r.Orders.BuyerID == buyerId)
+                .Select(r => new ReviewHistoryDto
+                {
+                    ReviewId = r.ReviewId,
+                    OrderID = r.OrderID,
+                    ProductTitle = r.Orders.Product != null ? r.Orders.Product.ProductTitle : null,
+                    ProductDescription = r.Orders.Product != null ? r.Orders.Product.ProductDescription : null,
+                    ProductImageUrl = r.Orders.Product != null ? r.Orders.Product.ProductImageUrl : null,
+                    Comment = r.Comment,
+                    ReviewImageUrl = r.ReviewImageUrl,
+                    ReviewDate = r.ReviewDate,
+                    SellerRating = r.SellerRating,
+                    DeliverRating = r.DeliverRating,
+                    ProductRating = r.ProductRating
+                })
+                .ToListAsync();
+
+            return reviewDetails;
+        }
+
+
+    }
 
 }
