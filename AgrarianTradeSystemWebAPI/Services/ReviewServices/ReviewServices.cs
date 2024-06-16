@@ -120,7 +120,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
             // Step 2: Fetch Reviews using the OrderIDs
             var reviews = await _context.Reviews
                 .Where(r => orderIds.Contains(r.OrderID))
-                .Include(r => r.Orders) // Include Orders for mapping
+                .Include(r => r.Order) // Include Orders for mapping
                 .ThenInclude(o => o.Buyer) // Include Buyer for mapping
                 .ToListAsync();
 
@@ -129,8 +129,8 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
             {
                 ReviewId = r.ReviewId,
                 OrderID = r.OrderID,
-                BuyerFirstName = r.Orders?.Buyer?.FirstName ?? "Unknown",
-                BuyerLastName = r.Orders?.Buyer?.LastName ?? "Unknown",
+                BuyerFirstName = r.Order?.Buyer?.FirstName ?? "Unknown",
+                BuyerLastName = r.Order?.Buyer?.LastName ?? "Unknown",
                 Comment = r.Comment,
                 ReviewImageUrl = r.ReviewImageUrl,
                 ReviewDate = r.ReviewDate,
@@ -144,21 +144,53 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
             return productReviewDtos;
         }
 
-
-
         public async Task<List<ReviewHistoryDto>> GetAllReviewHistory(string buyerId)
         {
             var reviewDetails = await _context.Reviews
-                .Include(r => r.Orders)
+                .Include(r => r.Order)
                 .ThenInclude(o => o.Product)
-                .Where(r => r.Orders.BuyerID == buyerId)
+                .Where(r => r.Order.BuyerID == buyerId)
                 .Select(r => new ReviewHistoryDto
                 {
                     ReviewId = r.ReviewId,
                     OrderID = r.OrderID,
-                    ProductTitle = r.Orders.Product != null ? r.Orders.Product.ProductTitle : null,
-                    ProductDescription = r.Orders.Product != null ? r.Orders.Product.ProductDescription : null,
-                    ProductImageUrl = r.Orders.Product != null ? r.Orders.Product.ProductImageUrl : null,
+                    ProductTitle = r.Order.Product != null ? r.Order.Product.ProductTitle : null,
+                    ProductDescription = r.Order.Product != null ? r.Order.Product.ProductDescription : null,
+                    ProductImageUrl = r.Order.Product != null ? r.Order.Product.ProductImageUrl : null,
+                    OrderedDate = r.Order.OrderedDate,
+                    ProductType = r.Order.Product != null ? r.Order.Product.ProductType : null,
+                    Comment = r.Comment,
+                    ReviewImageUrl = r.ReviewImageUrl,
+                    ReviewDate = r.ReviewDate,
+                    SellerRating = r.SellerRating,
+                    DeliverRating = r.DeliverRating,
+                    ProductRating = r.ProductRating
+                })
+                .ToListAsync();
+
+            return reviewDetails;
+        }
+
+        public async Task<List<ReviewHistoryDto>> GetAllReviewHistoryByFarmer(string farmerId)
+        {
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                throw new ArgumentException("farmerId cannot be null or empty", nameof(farmerId));
+            }
+
+            var reviewDetails = await _context.Reviews
+                .Include(r => r.Order)
+                    .ThenInclude(o => o.Product)
+                .Where(r => r.Order != null && r.Order.Product != null && r.Order.Product.FarmerID == farmerId)
+                .Select(r => new ReviewHistoryDto
+                {
+                    ReviewId = r.ReviewId,
+                    OrderID = r.OrderID,
+                    ProductTitle = r.Order.Product.ProductTitle,
+                    ProductDescription = r.Order.Product.ProductDescription,
+                    ProductImageUrl = r.Order.Product.ProductImageUrl,
+                    OrderedDate = r.Order.OrderedDate,
+                    ProductType = r.Order.Product != null ? r.Order.Product.ProductType : null,
                     Comment = r.Comment,
                     ReviewImageUrl = r.ReviewImageUrl,
                     ReviewDate = r.ReviewDate,

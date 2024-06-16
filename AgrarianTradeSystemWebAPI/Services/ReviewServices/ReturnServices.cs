@@ -28,19 +28,24 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
         }
 
         //get orders to return
-        public async Task<List<ReturnOrderDto>> GetOrdersToReturn()
+        public async Task<List<ReturnOrderDto>> GetOrdersToReturn(string buyerId)
         {
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                throw new ArgumentException("buyerId cannot be null or empty", nameof(buyerId));
+            }
+
             var returnOrders = await _context.Orders
-                .Where(o => o.OrderStatus == "return")
+                .Where(o => o.OrderStatus == "return" && o.BuyerID == buyerId)
                 .Select(o => new ReturnOrderDto
                 {
                     OrderID = o.OrderID,
                     ProductID = o.ProductID,
-                    TotalPrice= o.TotalPrice,
-                    TotalQuantity= o.TotalQuantity,
-                    ProductName = o.Product.ProductTitle,
-                    ProductDescription = o.Product.ProductDescription,
-                    ProductImageUrl = o.Product.ProductImageUrl
+                    TotalPrice = o.TotalPrice,
+                    TotalQuantity = o.TotalQuantity,
+                    ProductName = o.Product != null ? o.Product.ProductTitle : null,
+                    ProductDescription = o.Product != null ? o.Product.ProductDescription : null,
+                    ProductImageUrl = o.Product != null ? o.Product.ProductImageUrl : null
                 })
                 .ToListAsync();
 
@@ -87,6 +92,32 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 
             return returnDto;
         }
+
+        public async Task<List<ReturnDto>> GetAllReturnsByFarmer(string farmerId)
+        {
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                throw new ArgumentException("farmerId cannot be null or empty", nameof(farmerId));
+            }
+
+            var returnOrders = await _context.Returns
+                .Where(r => r.Order.Product.FarmerID == farmerId)
+                .Select(r => new ReturnDto
+                {
+                    ReturnId = r.ReturnID,
+                    OrderID = r.OrderID,
+                    ProductTitle = r.Order.Product != null ? r.Order.Product.ProductTitle : null,
+                    ProductDescription = r.Order.Product != null ? r.Order.Product.ProductDescription : null,
+                    ProductImageUrl = r.Order.Product != null ? r.Order.Product.ProductImageUrl : null,
+                    Reason = r.Reason,
+                    ReturnImageUrl = r.ReturnImageUrl,
+                    ReturnDate = r.ReturnDate
+                })
+                .ToListAsync();
+
+            return returnOrders;
+        }
+
 
     }
 }

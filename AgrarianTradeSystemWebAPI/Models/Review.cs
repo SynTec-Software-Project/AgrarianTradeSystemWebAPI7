@@ -17,6 +17,6 @@ namespace AgrarianTradeSystemWebAPI.Models
         public int ProductRating { get; set; }
         public string? Reply { get; set; }
         [JsonIgnore]
-        public Orders? Orders { get; set; }
+        public Orders? Order { get; set; }
     }
 }

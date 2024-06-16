@@ -12,7 +12,7 @@ namespace AgrarianTradeSystemWebAPI.Models
 		public DateTime ReturnDate { get; set;}
         public string? ReturnImageUrl { get; set; }
 		[JsonIgnore]
-		public Orders? Orders{ get; set;}
+		public Orders? Order{ get; set;}
 
     }
 }
