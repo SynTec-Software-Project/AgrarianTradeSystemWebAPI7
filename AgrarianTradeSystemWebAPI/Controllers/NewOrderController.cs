@@ -1,4 +1,5 @@
 ﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
 using AgrarianTradeSystemWebAPI.Services.NewOrderServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -62,6 +63,52 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 				return BadRequest($"Failed to update courier ID: {ex.Message}");
 			}
 		}
+        //get all notifications
+        [HttpGet]
+        [Route("getnotifications")]
+        public async Task<IActionResult> GetNotifications()
+        {
+            try
+            {
+                var notifications = await _orderService.getNotifications();
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to retrieve courier list: {ex.Message}");
+            }
+        }
+        //create new notification
+        [HttpPost]
+        [Route("Addnotification")]
+        public async Task<IActionResult> CreateNotification([FromBody] Notification notification)
+        {
+            try
+            {
+                 var notifi=await _orderService.createtNotification(notification);
+                return Ok("order create successfully");
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return BadRequest($"Failed to create order: {errorMessage}");
+            }
+        }
 
-	}
+        [HttpGet]
+        [Route("getnotification/{id}")]
+        public async Task<IActionResult> GetNotifications(string id)
+        {
+            try
+            {
+                var notifications = await _orderService.getNotification(id);
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to retrieve courier list: {ex.Message}");
+            }
+        }
+
+    }
 }
