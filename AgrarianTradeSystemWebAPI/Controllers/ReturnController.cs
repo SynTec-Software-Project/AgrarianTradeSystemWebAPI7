@@ -56,32 +56,32 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             }
         }
 
-
         [HttpGet]
         public async Task<ActionResult<List<Returns>>> GetAllReturns()
         {
             try
             {
-                // Use the service to get all returns
                 var result = await _returnServices.GetAllReturns();
 
-                // Return the result with an OK status
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                // Return a BadRequest status with the exception message if an error occurs
                 return BadRequest(ex.Message);
             }
         }
 
-        [HttpGet("to-return")]
-        public async Task<IActionResult> GetOrdersWithStatusReview()
+        [HttpGet("return/buyer")]
+        public async Task<IActionResult> GetOrdersWithStatusReview([FromQuery] string buyerId)
         {
-            var orders = await _returnServices.GetOrdersToReturn();
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                return BadRequest("BuyerID cannot be null or empty.");
+            }
+
+            var orders = await _returnServices.GetOrdersToReturn(buyerId);
             return Ok(orders);
         }
-
 
         [HttpGet("return-details/{orderId}")]
         public async Task<ActionResult<ReturnDto>> GetDetailsByOrderId(int orderId)
@@ -92,16 +92,29 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
                 if (returnDto == null)
                 {
-                    return NotFound(); // Return 404 Not Found if no return details are found for the given orderId
+                    return NotFound(); 
                 }
 
-                return Ok(returnDto); // Return the return details with 200 OK status
+                return Ok(returnDto); 
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "An unexpected error occurred while processing the request. " + ex.Message);
             }
         }
+
+        [HttpGet("return/farmer")]
+        public async Task<IActionResult> GetReturnByFarmer([FromQuery] string farmerId)
+        {
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                return BadRequest("FarmerID cannot be null or empty.");
+            }
+
+            var returnOrders = await _returnServices.GetAllReturnsByFarmer(farmerId);
+            return Ok(returnOrders);
+        }
+
 
     }
 }

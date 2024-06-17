@@ -95,7 +95,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 
-        [HttpGet("to-review")]
+        [HttpGet("to-review/buyer")]
         public async Task<IActionResult> GetOrdersWithStatusReview([FromQuery] string buyerId)
         {
             if (string.IsNullOrEmpty(buyerId))
@@ -141,6 +141,25 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             return Ok(reviews);
         }
 
+        [HttpGet("reviews/farmer")]
+        public async Task<IActionResult> GetReviewsByFarmer([FromQuery] string farmerId)
+        {
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                return BadRequest("FarmerID cannot be null or empty.");
+            }
+
+            try
+            {
+                var reviewHistory = await _reviewServices.GetAllReviewHistoryByFarmer(farmerId);
+                return Ok(reviewHistory);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., using a logging framework)
+                return StatusCode(500, "An error occurred while retrieving review history.");
+            }
+        }
 
     }
 

@@ -19,6 +19,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
    
         Task<Review> AddReviewReply(int id, string reply);
 
+        Task<List<ReviewHistoryDto>> GetAllReviewHistoryByFarmer(string farmerId);
         Task<List<ProductReviewDto>> GetReviewsByProductID(int productId);
         Task<List<ReviewHistoryDto>> GetAllReviewHistory(string buyerId);
         Task<List<ReviewOrdersDto>> GetOrdersToReview(string buyerId);
