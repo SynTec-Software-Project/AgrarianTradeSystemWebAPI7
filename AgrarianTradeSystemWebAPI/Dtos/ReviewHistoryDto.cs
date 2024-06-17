@@ -4,6 +4,7 @@
     {
         public int ReviewId { get; set; }
         public int OrderID { get; set; }
+        public decimal TotalQuantity { get; set; } = 0;
         public string? ProductTitle { get; set; } = string.Empty;
         public string? ProductDescription { get; set; }
         public string? ProductImageUrl { get; set; } = string.Empty;

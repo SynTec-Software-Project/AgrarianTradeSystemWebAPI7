@@ -6,6 +6,7 @@
         public int OrderID { get; set; }
         public string? BuyerFirstName { get; set; }
         public string? BuyerLastName { get; set; }
+        public string? BuyerProfileImageUrl { get; set; }
         public string? Comment { get; set; } = string.Empty;
         public string? ReviewImageUrl { get; set; } = string.Empty;
         public DateTime ReviewDate { get; set; } = DateTime.Now;

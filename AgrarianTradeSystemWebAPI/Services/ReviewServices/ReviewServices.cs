@@ -32,10 +32,62 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
 				return null;
 			return review;
 		}
+        public async Task<ReviewDetailsDto> GetReviewDetailsByOrderId(int orderId)
+        {
+            var reviewDto = await _context.Orders
+                .Where(o => o.OrderID == orderId)
+                .Select(o => new ReviewDetailsDto
+                {
+                    OrderID = o.OrderID,
+                    ProductTitle = o.Product.ProductTitle,
+                    ProductDescription = o.Product.ProductDescription,
+                    ProductType = o.Product.ProductType,
+                    ProductImageUrl = o.Product.ProductImageUrl,
+                    TotalPrice = o.TotalPrice,
+                    TotalQuantity = o.TotalQuantity,
+                    BuyerFName = o.Buyer.FirstName,
+                    BuyerLName = o.Buyer.LastName,
+                    OrderedDate = o.OrderedDate
+                })
+                .FirstOrDefaultAsync();
 
+            if (reviewDto != null)
+            {
+                // Now, find the review details based on OrderID
+                var reviewDetails = await _context.Reviews
+                    .Where(r => r.OrderID == orderId)
+                    .Select(r => new
+                    {
+                        r.ReviewId,
+                        r.Comment,
+                        r.ReviewImageUrl,
+                        r.ReviewDate,
+                        r.SellerRating,
+                        r.DeliverRating,
+                        r.ProductRating,
+                        r.Reply
+                    })
+                    .FirstOrDefaultAsync();
 
-		//add
-		public async Task<List<Review>> AddReview(Review review)
+                // Merge the review details into the existing reviewDto
+                if (reviewDetails != null)
+                {
+                    reviewDto.ReviewId = reviewDetails.ReviewId;
+                    reviewDto.Comment = reviewDetails.Comment;
+                    reviewDto.ReviewImageUrl = reviewDetails.ReviewImageUrl;
+                    reviewDto.ReviewDate = reviewDetails.ReviewDate;
+                    reviewDto.SellerRating = reviewDetails.SellerRating;
+                    reviewDto.DeliverRating = reviewDetails.DeliverRating;
+                    reviewDto.ProductRating = reviewDetails.ProductRating;
+                    reviewDto.Reply = reviewDetails.Reply;
+                }
+            }
+
+            return reviewDto;
+        }
+
+        //add
+        public async Task<List<Review>> AddReview(Review review)
 		{
 			_context.Reviews.Add(review);
 			await _context.SaveChangesAsync();
@@ -83,6 +135,9 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                 .Select(o => new ReviewOrdersDto
                 {
                     OrderID = o.OrderID,
+                    TotalQuantity = o.TotalQuantity,
+                    OrderedDate = o.OrderedDate,
+                    ProductType= o.Product.ProductType,
                     ProductID = o.ProductID,
                     ProductName = o.Product.ProductTitle,
                     ProductDescription = o.Product.ProductDescription,
@@ -131,6 +186,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                 OrderID = r.OrderID,
                 BuyerFirstName = r.Order?.Buyer?.FirstName ?? "Unknown",
                 BuyerLastName = r.Order?.Buyer?.LastName ?? "Unknown",
+                BuyerProfileImageUrl = r.Order?.Buyer?.ProfileImg ?? "Unknown",
                 Comment = r.Comment,
                 ReviewImageUrl = r.ReviewImageUrl,
                 ReviewDate = r.ReviewDate,
@@ -186,6 +242,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                 {
                     ReviewId = r.ReviewId,
                     OrderID = r.OrderID,
+                    TotalQuantity=r.Order.TotalQuantity,
                     ProductTitle = r.Order.Product.ProductTitle,
                     ProductDescription = r.Order.Product.ProductDescription,
                     ProductImageUrl = r.Order.Product.ProductImageUrl,

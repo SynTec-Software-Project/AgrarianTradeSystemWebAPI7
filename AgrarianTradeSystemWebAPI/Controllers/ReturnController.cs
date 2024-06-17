@@ -28,30 +28,25 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             {
                 string? fileUrl = null;
 
-                // Check if a file is provided and upload it
                 if (file != null && file.Length > 0)
                 {
                     fileUrl = await _fileServices.Upload(file, AzureContainerName);
                 }
-
-                // Create a new Returns object
                 var returns = new Returns
                 {
                     OrderID = returnDto.OrderID,
                     Reason = returnDto.Reason,
+                    ReturnQuantity=returnDto.ReturnQuantity,
+                    ReturnPrice=returnDto.ReturnPrice,
                     ReturnDate = DateTime.Now,
                     ReturnImageUrl = fileUrl
                 };
-
-                // Use the service to add the return
                 var result = await _returnServices.AddReturn(returns);
 
-                // Return the created return entry
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                // Return an error response with a status code 500
                 return StatusCode(500, "An unexpected error occurred while processing the request. " + ex.Message);
             }
         }

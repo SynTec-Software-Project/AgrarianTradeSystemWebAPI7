@@ -24,23 +24,17 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		}
 
-		[HttpGet("All")]
-		public async Task<IActionResult> GetAllReviews()
-		{
-			var reviews = await _reviewServices.GetAllReview();
-			return Ok(reviews);
-		}
-
-		[HttpGet("{id}")]
-		public async Task<ActionResult<List<Review>>> GetSingleReview(int id)
-		{
-			var result = await _reviewServices.GetSingleReview(id);
-			if (result is null)
-				return NotFound("review is not found");
-			return Ok(result);
-		}
-
-		[HttpPost("add-review")]
+        [HttpGet("order-details/{orderId}")]
+        public async Task<ActionResult<ReviewDetailsDto>> GetReviewDetailsByOrderId(int orderId)
+        {
+            var reviewDetails = await _reviewServices.GetReviewDetailsByOrderId(orderId);
+            if (reviewDetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(reviewDetails);
+        }
+        [HttpPost("add-review")]
 		public async Task<ActionResult<List<Review>>> AddReview([FromForm] AddReviewDto reviewDto, IFormFile file)
 		{
 			try
