@@ -1,68 +1,168 @@
-﻿using AgrarianTradeSystemWebAPI.Models;
+﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
+using AgrarianTradeSystemWebAPI.Services.ProductServices;
 using AgrarianTradeSystemWebAPI.Services.ReviewServices;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AgrarianTradeSystemWebAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ReviewController : ControllerBase
-    {
+	[Route("api/[controller]")]
+	[ApiController]
+	public class ReviewController : ControllerBase
+	{
 
-        private readonly IReviewServices _reviewServices;
+		private readonly IReviewServices _reviewServices;
+		private readonly IFileServices _fileServices;
+		private const string AzureContainerName = "reviews";
 
-        public ReviewController(IReviewServices reviewServices)
+		public ReviewController(IReviewServices reviewServices, IFileServices fileServices)
+		{
+			_reviewServices = reviewServices;
+			_fileServices = fileServices;
+
+		}
+
+		[HttpGet("All")]
+		public async Task<IActionResult> GetAllReviews()
+		{
+			var reviews = await _reviewServices.GetAllReview();
+			return Ok(reviews);
+		}
+
+		[HttpGet("{id}")]
+		public async Task<ActionResult<List<Review>>> GetSingleReview(int id)
+		{
+			var result = await _reviewServices.GetSingleReview(id);
+			if (result is null)
+				return NotFound("review is not found");
+			return Ok(result);
+		}
+
+		[HttpPost("add-review")]
+		public async Task<ActionResult<List<Review>>> AddReview([FromForm] AddReviewDto reviewDto, IFormFile file)
+		{
+			try
+			{
+				if (file == null || file.Length == 0)
+				{
+					return BadRequest("No file uploaded.");
+				}
+
+				var fileUrl = await _fileServices.Upload(file, AzureContainerName);
+
+				var review = new Review
+				{
+					OrderID = reviewDto.OrderID,
+					Comment = reviewDto.Comment,
+					SellerRating = reviewDto.SellerRating,
+					DeliverRating = reviewDto.DeliverRating,
+					ProductRating = reviewDto.ProductRating,
+					ReviewImageUrl = fileUrl
+				};
+
+				var result = await _reviewServices.AddReview(review);
+				return Ok(result);
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, "An unexpected error occurred while processing the request." + ex.Message);
+			}
+
+		}
+
+		[HttpPut("edit-review/{id}")]
+		public async Task<ActionResult<List<Review>>> UpdateReview(int id, Review request)
+		{
+
+			var result = await _reviewServices.UpdateReview(id, request);
+			if (result is null)
+				return NotFound("review is not found");
+
+			return Ok(result);
+
+		}
+
+		[HttpDelete("{id}")]
+		public async Task<ActionResult<List<Review>>> DeleteReview(int id)
+		{
+
+			var result = await _reviewServices.DeleteReview(id);
+			if (result is null)
+				return NotFound("hero is not found");
+			return Ok(result);
+		}
+
+
+        [HttpGet("to-review/buyer")]
+        public async Task<IActionResult> GetOrdersWithStatusReview([FromQuery] string buyerId)
         {
-            _reviewServices = reviewServices;
-            
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                return BadRequest("BuyerID is required.");
+            }
+
+            var orders = await _reviewServices.GetOrdersToReview(buyerId);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No orders found for the given BuyerID.");
+            }
+
+            return Ok(orders);
         }
 
-        [HttpGet]
-        public async Task<ActionResult<List<Review>>> GetAllReview()
-        {
 
-            return await _reviewServices.GetAllReview();
+        [HttpPut("add-reply/{id}")]
+		public async Task<IActionResult> UpdateReviewReply(int id, [FromBody] string reply)
+		{
+			var updatedReview = await _reviewServices.AddReviewReply(id, reply);
+
+			if (updatedReview == null)
+			{
+				return NotFound();
+			}
+
+			return Ok(updatedReview);
+		}
+
+		[HttpGet("product-reviews/{productId}")]
+		public async Task<IActionResult> GetReviewsByProductID(int productId)
+		{
+			var reviews = await _reviewServices.GetReviewsByProductID(productId);
+			return Ok(reviews);
+		}
+
+
+        [HttpGet("review-history")]
+        public async Task<IActionResult> GetReviewHistory(string buyerId)
+        {
+            var reviews = await _reviewServices.GetAllReviewHistory(buyerId);
+            return Ok(reviews);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<List<Review>>> GetSingleReview(int id)
+        [HttpGet("reviews/farmer")]
+        public async Task<IActionResult> GetReviewsByFarmer([FromQuery] string farmerId)
         {
-            var result = await _reviewServices.GetSingleReview(id);
-            if (result is null)
-                return NotFound("review is not found");
-            return Ok(result);
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                return BadRequest("FarmerID cannot be null or empty.");
+            }
+
+            try
+            {
+                var reviewHistory = await _reviewServices.GetAllReviewHistoryByFarmer(farmerId);
+                return Ok(reviewHistory);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., using a logging framework)
+                return StatusCode(500, "An error occurred while retrieving review history.");
+            }
         }
-
-        [HttpPost]
-        public async Task<ActionResult<List<Review>>> AddReview(Review review)
-        {
-            var result = await _reviewServices.AddReview(review);
-            return Ok(result);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<List<Review>>> UpdateReview(int id, Review request)
-        {
-
-            var result = await _reviewServices.UpdateReview(id, request);
-            if (result is null)
-                return NotFound("review is not found");
-
-            return Ok(result);
-
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<List<Review>>> DeleteReview(int id)
-        {
-
-            var result = await _reviewServices.DeleteReview(id);
-            if (result is null)
-                return NotFound("hero is not found");
-            return Ok(result);
-        }
-
 
     }
+
+
 }
+

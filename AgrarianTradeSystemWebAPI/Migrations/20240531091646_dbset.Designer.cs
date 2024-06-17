@@ -4,6 +4,7 @@ using AgrarianTradeSystemWebAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AgrarianTradeSystemWebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240531091646_dbset")]
+    partial class dbset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,20 +24,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.AdminModels.Admin", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Email");
-
-                    b.ToTable("Admins");
-                });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
                 {
@@ -204,6 +193,9 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OrdersOrderID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -216,7 +208,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
                     b.HasKey("ReturnID");
 
-                    b.HasIndex("OrderID");
+                    b.HasIndex("OrdersOrderID");
 
                     b.ToTable("Returns");
                 });
@@ -239,6 +231,9 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
+                    b.Property<int?>("OrdersOrderID")
+                        .HasColumnType("int");
+
                     b.Property<int>("ProductRating")
                         .HasColumnType("int");
 
@@ -257,7 +252,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("OrderID");
+                    b.HasIndex("OrdersOrderID");
 
                     b.ToTable("Reviews");
                 });
@@ -580,24 +575,20 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Returns", b =>
                 {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Order")
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
                         .WithMany()
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrdersOrderID");
 
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Review", b =>
                 {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Order")
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
                         .WithMany()
-                        .HasForeignKey("OrderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OrdersOrderID");
 
-                    b.Navigation("Order");
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>

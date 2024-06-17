@@ -15,7 +15,7 @@ namespace AgrarianTradeSystemWebAPI.Data
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			base.OnConfiguring(optionsBuilder);
-			optionsBuilder.UseSqlServer("Data Source=SQL5106.site4now.net;Initial Catalog=db_aa6c3c_syntecproject;User Id=db_aa6c3c_syntecproject_admin;Password=syntec@123");
+			optionsBuilder.UseSqlServer("Data Source=SQL8010.site4now.net;Initial Catalog=db_aa969d_atsdb;User Id=db_aa969d_atsdb_admin;Password=syntec@123");
 		}
 
         public DbSet<User> Users { get; set; }

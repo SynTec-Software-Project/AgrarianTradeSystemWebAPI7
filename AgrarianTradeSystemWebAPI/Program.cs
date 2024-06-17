@@ -9,6 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AgrarianTradeSystemWebAPI.Services.AdminServices;
+using AgrarianTradeSystemWebAPI.Services.NewOrderServices;
+using AgrarianTradeSystemWebAPI.Services.OrderServices;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,11 +32,11 @@ builder.Services.AddScoped(_ =>
 {
 	return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
 });
-//register IFileService
+//register Services
 builder.Services.AddScoped<IFileServices, FileServices>();
 builder.Services.AddScoped<IReviewServices, ReviewServices>();
-
-//register Shopping cart Service
+builder.Services.AddScoped<IOrderServices, OrderServices>();
+builder.Services.AddScoped<IReturnServices, ReturnServices>();
 builder.Services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
 
 //add cors for connect react and .net
@@ -52,6 +55,8 @@ builder.Services.AddScoped<IProductServices, ProductServices>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IAdminServices, AdminServices>();
+builder.Services.AddScoped<INewOrderServices, NewOrderServices>();
+
 //builder.Services.AddScoped<IUserServices>(sp =>
 // {
 //     var dbContext = sp.GetRequiredService<DataContext>();

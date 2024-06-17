@@ -1,12 +1,13 @@
 ﻿namespace AgrarianTradeSystemWebAPI.Dtos
 {
-	public class ProductDto
+	public class ProductCardDto
 	{
-		public string ProductTitle { get; set; } = string.Empty;
+		public int ProductID { get; set; }
 
-		public required string FarmerID { get; set; }
+		public string? FarmerAddL3 { get; set; }
+		public string? ProductTitle { get; set; } = string.Empty;
 
-		public string? ProductDescription { get; set; } = string.Empty;
+		public string? ProductImageUrl { get; set; } = string.Empty;
 
 		public string? ProductType { get; set; } = string.Empty;
 
@@ -17,6 +18,5 @@
 		public int AvailableStock { get; set; }
 
 		public int MinimumQuantity { get; set; }
-
 	}
 }
