@@ -134,7 +134,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 
-        [HttpGet("review-history}")]
+        [HttpGet("review-history")]
         public async Task<IActionResult> GetReviewHistory(string buyerId)
         {
             var reviews = await _reviewServices.GetAllReviewHistory(buyerId);
