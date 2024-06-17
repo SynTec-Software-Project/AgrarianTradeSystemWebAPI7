@@ -229,5 +229,19 @@ namespace AgrarianTradeSystemWebAPI.Services.ProductServices
 			return await _context.Products.ToListAsync();
 		}
 
-	}
+		//search
+        public async Task<List<Product>> SearchAsync(string searchTerm)
+        {
+            searchTerm = searchTerm.ToLower();
+
+            var products = await _context.Products
+                .Where(p =>
+                    p.ProductTitle.ToLower().Contains(searchTerm) ||
+                    p.ProductDescription.ToLower().Contains(searchTerm))
+                .ToListAsync();
+
+            return products;
+        }
+
+    }
 }

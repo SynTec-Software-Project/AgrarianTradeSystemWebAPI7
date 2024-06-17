@@ -10,9 +10,11 @@ namespace AgrarianTradeSystemWebAPI.Models
 		public int OrderID { get; set; }
 		public required string Reason { get; set; }
 		public DateTime ReturnDate { get; set;}
+        public decimal ReturnQuantity { get; set; }
+		public decimal ReturnPrice { get; set; } = 0;
         public string? ReturnImageUrl { get; set; }
 		[JsonIgnore]
-		public Orders? Orders{ get; set;}
+		public Orders? Order{ get; set;}
 
     }
 }

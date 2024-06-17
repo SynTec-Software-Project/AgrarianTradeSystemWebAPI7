@@ -23,7 +23,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         [HttpPost]
         public IActionResult SendEmail(EmailDto request)
         {
-            _emailService.SendEmail(request);
+            //_emailService.SendEmail(request);
             return Ok();
         }
     }

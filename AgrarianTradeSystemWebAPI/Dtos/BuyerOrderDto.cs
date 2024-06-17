@@ -8,6 +8,8 @@ namespace AgrarianTradeSystemWebAPI.Dtos
         public int OrderID { get; set; }
         public string ProductTitle { get; set; } = string.Empty;
         public string ProductImageUrl { get; set; } = string.Empty;
+        public string ProductType { get; set; } = string.Empty;
+        public string ProductDescription { get; set; }= string.Empty;
         public DateTime? DeliveryDate { get; set; }
         public DateTime OrderedDate { get; set; }
         public decimal DeliveryFee { get; set; }
