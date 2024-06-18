@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AgrarianTradeSystemWebAPI.Services.NewOrderServices
 {
-    public class NewOrderServices : INewOrderServices
+	public class NewOrderServices :INewOrderServices
 	{
 		private readonly DataContext _context;
 
@@ -83,39 +83,6 @@ namespace AgrarianTradeSystemWebAPI.Services.NewOrderServices
 			await _context.SaveChangesAsync();
 		}
 
-
-		public async Task<List<Notification>> getNotifications()
-		{
-			return _context.Notifications.ToList();
-        }
-        public async Task<List<Notification>> getNotification(string? email)
-        {
-            return await _context.Notifications
-                                 .Where(d => d.To == email)
-                                 .ToListAsync();
-        }
-       public async  Task<Notification> createtNotification(Notification notification)
-		{
-			_context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();
-
-            return notification;
-        }
-
-        public async Task<bool> DeleteNotificationAsync(int id)
-        {
-            var notification = await _context.Notifications.FindAsync(id);
-            if (notification == null)
-            {
-                return false;
-            }
-
-            _context.Notifications.Remove(notification);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-
-    }
+	}
 
 }
