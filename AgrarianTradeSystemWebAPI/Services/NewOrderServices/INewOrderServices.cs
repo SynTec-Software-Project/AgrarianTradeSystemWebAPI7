@@ -13,5 +13,7 @@ namespace AgrarianTradeSystemWebAPI.Services.NewOrderServices
 
         Task<List<Notification>> getNotification(string email);
 
+        Task<bool> DeleteNotificationAsync(int id);
+
     }
 }

@@ -86,7 +86,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
             try
             {
                  var notifi=await _orderService.createtNotification(notification);
-                return Ok("order create successfully");
+                return Ok("notification sent");
             }
             catch (Exception ex)
             {
@@ -96,7 +96,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getnotification/{id}")]
+        [Route("getnotification/to/id}")]
         public async Task<IActionResult> GetNotifications(string id)
         {
             try
@@ -109,6 +109,27 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                 return BadRequest($"Failed to retrieve courier list: {ex.Message}");
             }
         }
+
+        [HttpDelete]
+        [Route("deletenotification/{id}")]
+        public async Task<IActionResult> DeleteNotification(int id)
+        {
+            try
+            {
+                var result = await _orderService.DeleteNotificationAsync(id);
+                if (!result)
+                {
+                    return NotFound($"Notification with ID {id} not found.");
+                }
+
+                return Ok($"Notification with ID {id} deleted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Failed to delete notification: {ex.Message}");
+            }
+        }
+
 
     }
 }

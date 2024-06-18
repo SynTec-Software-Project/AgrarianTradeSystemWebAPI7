@@ -102,6 +102,20 @@ namespace AgrarianTradeSystemWebAPI.Services.NewOrderServices
             return notification;
         }
 
+        public async Task<bool> DeleteNotificationAsync(int id)
+        {
+            var notification = await _context.Notifications.FindAsync(id);
+            if (notification == null)
+            {
+                return false;
+            }
+
+            _context.Notifications.Remove(notification);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+
     }
 
 }
