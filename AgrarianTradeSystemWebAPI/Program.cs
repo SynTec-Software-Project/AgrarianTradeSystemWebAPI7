@@ -25,6 +25,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("ReactJSDomain", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 //auto mapper service setup
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
@@ -51,7 +61,8 @@ builder.Services.AddCors(option =>
         .AllowAnyMethod()
         .AllowAnyOrigin()
     );
-});*/
+});
+*/
 
     builder.Services.AddScoped<IProductServices, ProductServices>();
     builder.Services.AddScoped<IEmailService, EmailService>();
@@ -69,12 +80,13 @@ builder.Services.AddCors(option =>
     builder.Services.AddDbContext<DataContext>(options =>
      options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
+/*
     builder.Services.AddCors(option =>
     {
         option.AddPolicy(name: "ReactJSDomain",
             policy => policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod());
     });
-
+*/
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -107,13 +119,16 @@ builder.Services.AddCors(option =>
     }
 
     app.UseHttpsRedirection();
+app.UseDeveloperExceptionPage();
 
-    app.UseCors("ReactJSDomain");
+
 
     app.UseAuthorization();
 
     app.MapControllers();
 
-    app.MapHub<NotificationHub>("/notificationhub");
+ app.MapHub<NotificationHub>("/notificationhub");
 
-    app.Run();
+app.UseCors("ReactJSDomain");
+
+app.Run();

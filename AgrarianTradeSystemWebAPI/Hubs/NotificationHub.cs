@@ -1,11 +1,20 @@
 ﻿using AgrarianTradeSystemWebAPI.Dtos;
+using AgrarianTradeSystemWebAPI.Models;
 using Microsoft.AspNetCore.SignalR;
+using System.Threading.Tasks;
 
 namespace AgrarianTradeSystemWebAPI.Hubs
 {
     public class NotificationHub : Hub
     {
-        /*
+
+        private readonly IHubContext<NotificationHub> _hubContext;
+
+        public NotificationHub(IHubContext<NotificationHub> hubContext)
+        {
+            _hubContext = hubContext;
+        }
+
         public async Task SendNotification(NotificationDto notification)
         {
             string message;
@@ -27,23 +36,11 @@ namespace AgrarianTradeSystemWebAPI.Hubs
                 return;
             }
 
-            await Clients.User(userId).SendAsync("ReceiveMessage", "admin", message);
-        }
-        */
+            await Clients.User(userId).SendAsync("ReceiveMessage", message);
 
-        private readonly IHubContext<NotificationHub> _hubContext;
-
-        public NotificationHub(IHubContext<NotificationHub> hubContext)
-        {
-            _hubContext = hubContext;
         }
 
-        public async Task SendNotification(string userId, string message)
-        {
-            await _hubContext.Clients.User(userId).SendAsync("ReceiveNotification", message);
-        }
     }
-
 }
 
  

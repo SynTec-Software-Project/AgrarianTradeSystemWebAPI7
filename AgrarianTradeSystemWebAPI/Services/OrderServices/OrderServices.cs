@@ -15,7 +15,7 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
     {
         private readonly DataContext _context;
         private readonly IHubContext<NotificationHub> _hubContext;
-        private static ConcurrentDictionary<int, TaskCompletionSource<bool>> _confirmationTasks = new ConcurrentDictionary<int, TaskCompletionSource<bool>>();
+        private static readonly ConcurrentDictionary<int, TaskCompletionSource<bool>> _confirmationTasks = new ConcurrentDictionary<int, TaskCompletionSource<bool>>();
 
         public OrderServices(DataContext context, IHubContext<NotificationHub> hubContext)
         {
@@ -163,7 +163,8 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                     FarmerAddL1 = order.Product.Farmer?.AddL1,
                     FarmerAddL2 = order.Product.Farmer?.AddL2,
                     FarmerAddL3 = order.Product.Farmer?.AddL3,
-                    FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber
+                    FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber,
+                   
                 }).ToList();
 
                 return orderDtos;

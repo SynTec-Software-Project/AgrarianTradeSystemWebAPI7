@@ -12,7 +12,8 @@ namespace AgrarianTradeSystemWebAPI.Models
         public DateTime ReceivedTime { get; set; }
         public string? FromCourierID { get; set; }
         public string? ToUserID { get; set; }
-        public string? Description { get; set; }
+        public string? Message { get; set; }
+        public int OrderID { get; set; }
 
         [JsonIgnore]
         public User? Buyer { get; set; }

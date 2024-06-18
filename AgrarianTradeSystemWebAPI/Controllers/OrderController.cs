@@ -56,7 +56,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                     FarmerAddL1 = order.Product?.Farmer?.AddL1,
                     FarmerAddL2 = order.Product?.Farmer?.AddL2,
                     FarmerAddL3 = order.Product?.Farmer?.AddL3,
-                    FarmerPhoneNumber = order.Product?.Farmer?.PhoneNumber
+                    FarmerPhoneNumber = order.Product?.Farmer?.PhoneNumber,
                 };
 
                 orderDtos.Add(orderDto);
