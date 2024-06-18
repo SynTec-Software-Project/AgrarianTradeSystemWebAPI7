@@ -56,6 +56,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IAdminServices, AdminServices>();
 builder.Services.AddScoped<INewOrderServices, NewOrderServices>();
+builder.Services.AddScoped<INotificationServices, NotificationServices>();
 
 //builder.Services.AddScoped<IUserServices>(sp =>
 // {
