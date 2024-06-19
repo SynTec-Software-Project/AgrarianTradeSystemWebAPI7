@@ -108,7 +108,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 
         [HttpPut("add-reply/{id}")]
-		public async Task<IActionResult> UpdateReviewReply(int id, [FromBody] string reply)
+		public async Task<IActionResult> UpdateReviewReply(int id,string reply)
 		{
 			var updatedReview = await _reviewServices.AddReviewReply(id, reply);
 

@@ -20,7 +20,12 @@
         public string? Reply { get; set; }
         public string BuyerFName { get; set; } = string.Empty;
         public string BuyerLName { get; set; } = string.Empty;
-        
+        public string BuyerImageUrl { get; set; } = string.Empty;
+        public int productId { get; set; }
+
+
+
+
 
     }
 }

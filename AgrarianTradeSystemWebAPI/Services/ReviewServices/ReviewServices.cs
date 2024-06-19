@@ -39,6 +39,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                 .Select(o => new ReviewDetailsDto
                 {
                     OrderID = o.OrderID,
+                    productId=o.ProductID,
                     ProductTitle = o.Product.ProductTitle,
                     ProductDescription = o.Product.ProductDescription,
                     ProductType = o.Product.ProductType,
@@ -47,6 +48,7 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                     TotalQuantity = o.TotalQuantity,
                     BuyerFName = o.Buyer.FirstName,
                     BuyerLName = o.Buyer.LastName,
+                    BuyerImageUrl=o.Buyer.ProfileImg,
                     OrderedDate = o.OrderedDate
                 })
                 .FirstOrDefaultAsync();
@@ -186,7 +188,10 @@ namespace AgrarianTradeSystemWebAPI.Services.ReviewServices
                 OrderID = r.OrderID,
                 BuyerFirstName = r.Order?.Buyer?.FirstName ?? "Unknown",
                 BuyerLastName = r.Order?.Buyer?.LastName ?? "Unknown",
-                BuyerProfileImageUrl = r.Order?.Buyer?.ProfileImg ?? "Unknown",
+                BuyerProfileImageUrl = r.Order?.Buyer?.ProfileImg,
+                SellerFirstName=r.Order?.Product?.Farmer?.FirstName,
+                SellerLastName=r.Order?.Product?.Farmer?.LastName,
+                SellerProfileImageUrl=r.Order?.Product?.Farmer?.ProfileImg,
                 Comment = r.Comment,
                 ReviewImageUrl = r.ReviewImageUrl,
                 ReviewDate = r.ReviewDate,
