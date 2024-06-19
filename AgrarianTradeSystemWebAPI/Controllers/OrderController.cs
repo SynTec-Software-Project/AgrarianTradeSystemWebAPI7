@@ -78,6 +78,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
                     ProductImageUrl = order.Product.ProductImageUrl,
                     DeliveryDate = order.DeliveryDate,
                     OrderedDate = order.OrderedDate,
+                    TotalQuantity = order.TotalQuantity,
                     DeliveryFee = order.DeliveryFee,
                     OrderStatus = order.OrderStatus,
                     TotalPrice = order.TotalPrice,

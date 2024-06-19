@@ -6,6 +6,9 @@ namespace AgrarianTradeSystemWebAPI.Dtos
     {
         [Key]
         public int OrderID { get; set; }
+        public string? FarmerID { get; set; }
+        public  string? CourierID { get; set; }
+        public  string? BuyerID { get; set; }
         public string? ProductTitle { get; set; } = string.Empty;
         public string? ProductImageUrl { get; set; } = string.Empty;
         public DateTime? DeliveryDate { get; set; }
@@ -26,10 +29,6 @@ namespace AgrarianTradeSystemWebAPI.Dtos
         public string? FarmerAddL2 { get; set; } = string.Empty;
         public string? FarmerAddL3 { get; set; } = string.Empty;
         public string? FarmerPhoneNumber { get; set; } = string.Empty;
-
-
-
-
-
+   
     }
 }

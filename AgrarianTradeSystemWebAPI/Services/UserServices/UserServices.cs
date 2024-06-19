@@ -25,12 +25,15 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
         private const string AzureContainerVehicleImg = "vehicleimage";
         private const string AzureContainerGNSImg = "gramaniladhari";
         private readonly IFileServices _fileServices;
-        public UserServices(DataContext context, IConfiguration configuration, IEmailService emailService, IFileServices fileServices)
+        private readonly IShoppingCartServices _shoppingCartServices;
+        public UserServices(DataContext context, IConfiguration configuration, IEmailService emailService, IFileServices fileServices, IShoppingCartServices shoppingCartServices)
         {
             _context = context;
             _configuration = configuration;
             _emailService = emailService;
             _fileServices = fileServices;
+            _shoppingCartServices = shoppingCartServices;
+
         }
 
         public static User user = new User();
@@ -65,6 +68,7 @@ namespace AgrarianTradeSystemWebAPI.Services.UserServices
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             _emailService.SendUserRegisterEmail(user.Email, user.FirstName, user.LastName, user.VerificationToken);
+            await _shoppingCartServices.CreateCartForUserAsync(user.Email);
         }
 
         // Farmer registration service -----------------------------------
