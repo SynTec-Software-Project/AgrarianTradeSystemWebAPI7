@@ -87,6 +87,9 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                 var orderDtos = orders.Select(order => new CourierOrderDto
                 {
                     OrderID = order.OrderID,
+                    BuyerID = order.BuyerID,
+                    CourierID = order.CourierID,
+                    FarmerID=order.Product.FarmerID,
                     ProductTitle = order.Product?.ProductTitle,
                     ProductImageUrl = order.Product?.ProductImageUrl,
                     OrderStatus = order.OrderStatus,
@@ -103,6 +106,7 @@ namespace AgrarianTradeSystemWebAPI.Services.OrderServices
                     FarmerAddL2 = order.Product.Farmer?.AddL2,
                     FarmerAddL3 = order.Product.Farmer?.AddL3,
                     FarmerPhoneNumber = order.Product.Farmer?.PhoneNumber
+                    
                 }).ToList();
 
                 return orderDtos;
