@@ -6,11 +6,11 @@
 
 		public required string FarmerID { get; set; }
 
-		public string ProductDescription { get; set; } = string.Empty;
+		public string? ProductDescription { get; set; } = string.Empty;
 
-		public string ProductType { get; set; } = string.Empty;
+		public string? ProductType { get; set; } = string.Empty;
 
-		public string Category { get; set; } = string.Empty;
+		public string? Category { get; set; } = string.Empty;
 
 		public double UnitPrice { get; set; }
 

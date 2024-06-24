@@ -24,23 +24,17 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		}
 
-		[HttpGet("All")]
-		public async Task<IActionResult> GetAllReviews()
-		{
-			var reviews = await _reviewServices.GetAllReview();
-			return Ok(reviews);
-		}
-
-		[HttpGet("{id}")]
-		public async Task<ActionResult<List<Review>>> GetSingleReview(int id)
-		{
-			var result = await _reviewServices.GetSingleReview(id);
-			if (result is null)
-				return NotFound("review is not found");
-			return Ok(result);
-		}
-
-		[HttpPost("add-review")]
+        [HttpGet("order-details/{orderId}")]
+        public async Task<ActionResult<ReviewDetailsDto>> GetReviewDetailsByOrderId(int orderId)
+        {
+            var reviewDetails = await _reviewServices.GetReviewDetailsByOrderId(orderId);
+            if (reviewDetails == null)
+            {
+                return NotFound();
+            }
+            return Ok(reviewDetails);
+        }
+        [HttpPost("add-review")]
 		public async Task<ActionResult<List<Review>>> AddReview([FromForm] AddReviewDto reviewDto, IFormFile file)
 		{
 			try
@@ -72,7 +66,7 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 
 		}
 
-		[HttpPut("{id}")]
+		[HttpPut("edit-review/{id}")]
 		public async Task<ActionResult<List<Review>>> UpdateReview(int id, Review request)
 		{
 
@@ -95,15 +89,26 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 		}
 
 
-		[HttpGet("to-review")]
-		public async Task<IActionResult> GetOrdersWithStatusReview()
-		{
-			var orders = await _reviewServices.GetOrdersToReview();
-			return Ok(orders);
-		}
+        [HttpGet("to-review/buyer")]
+        public async Task<IActionResult> GetOrdersWithStatusReview([FromQuery] string buyerId)
+        {
+            if (string.IsNullOrEmpty(buyerId))
+            {
+                return BadRequest("BuyerID is required.");
+            }
 
-		[HttpPut("{id}/add-reply")]
-		public async Task<IActionResult> UpdateReviewReply(int id, [FromBody] string reply)
+            var orders = await _reviewServices.GetOrdersToReview(buyerId);
+            if (orders == null || !orders.Any())
+            {
+                return NotFound("No orders found for the given BuyerID.");
+            }
+
+            return Ok(orders);
+        }
+
+
+        [HttpPut("add-reply/{id}")]
+		public async Task<IActionResult> UpdateReviewReply(int id,string reply)
 		{
 			var updatedReview = await _reviewServices.AddReviewReply(id, reply);
 
@@ -115,20 +120,42 @@ namespace AgrarianTradeSystemWebAPI.Controllers
 			return Ok(updatedReview);
 		}
 
-		[HttpGet("product/{productId}")]
+		[HttpGet("product-reviews/{productId}")]
 		public async Task<IActionResult> GetReviewsByProductID(int productId)
 		{
 			var reviews = await _reviewServices.GetReviewsByProductID(productId);
 			return Ok(reviews);
 		}
 
-		[HttpGet("get-history")]
-		public IActionResult GetAllReviewDetails()
-		{
-			var reviewDetails = _reviewServices.GetAllReviewDetails();
-			return Ok(reviewDetails);
-		}
-	}
+
+        [HttpGet("review-history")]
+        public async Task<IActionResult> GetReviewHistory(string buyerId)
+        {
+            var reviews = await _reviewServices.GetAllReviewHistory(buyerId);
+            return Ok(reviews);
+        }
+
+        [HttpGet("reviews/farmer")]
+        public async Task<IActionResult> GetReviewsByFarmer([FromQuery] string farmerId)
+        {
+            if (string.IsNullOrEmpty(farmerId))
+            {
+                return BadRequest("FarmerID cannot be null or empty.");
+            }
+
+            try
+            {
+                var reviewHistory = await _reviewServices.GetAllReviewHistoryByFarmer(farmerId);
+                return Ok(reviewHistory);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (e.g., using a logging framework)
+                return StatusCode(500, "An error occurred while retrieving review history.");
+            }
+        }
+
+    }
 
 
 }

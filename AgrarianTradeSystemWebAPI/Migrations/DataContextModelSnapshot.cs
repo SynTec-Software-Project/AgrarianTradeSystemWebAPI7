@@ -22,6 +22,20 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.AdminModels.Admin", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("Admins");
+                });
+
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
                 {
                     b.Property<int>("CartId")
@@ -69,6 +83,40 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("ISSeen")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OrderStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SendAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("To")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Orders", b =>
@@ -190,9 +238,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrdersOrderID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -203,9 +248,15 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<string>("ReturnImageUrl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("ReturnPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ReturnQuantity")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("ReturnID");
 
-                    b.HasIndex("OrdersOrderID");
+                    b.HasIndex("OrderID");
 
                     b.ToTable("Returns");
                 });
@@ -228,9 +279,6 @@ namespace AgrarianTradeSystemWebAPI.Migrations
                     b.Property<int>("OrderID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OrdersOrderID")
-                        .HasColumnType("int");
-
                     b.Property<int>("ProductRating")
                         .HasColumnType("int");
 
@@ -249,7 +297,7 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
                     b.HasKey("ReviewId");
 
-                    b.HasIndex("OrdersOrderID");
+                    b.HasIndex("OrderID");
 
                     b.ToTable("Reviews");
                 });
@@ -572,20 +620,24 @@ namespace AgrarianTradeSystemWebAPI.Migrations
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Returns", b =>
                 {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Order")
                         .WithMany()
-                        .HasForeignKey("OrdersOrderID");
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Orders");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Review", b =>
                 {
-                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Orders")
+                    b.HasOne("AgrarianTradeSystemWebAPI.Models.Orders", "Order")
                         .WithMany()
-                        .HasForeignKey("OrdersOrderID");
+                        .HasForeignKey("OrderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Orders");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("AgrarianTradeSystemWebAPI.Models.Cart", b =>
